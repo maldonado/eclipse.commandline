@@ -14,6 +14,15 @@ public class ConnectionFactory {
 
 	private static final String dataBasePath = getPath();
 
+	private static final String CREATE_TABLE_COMMENT_CLASS ="CREATE TABLE IF NOT EXISTS comment_class (id integer primary key autoincrement,projectName text,"
+			+ "fileName text,className text,access text,isAbstract text,isEnum text,isInterface text, startline integer, endline integer)";
+
+	private static final String CREATE_TABLE_COMMENT = "CREATE TABLE IF NOT EXISTS comment (id integer primary key autoincrement,"
+			+ "commentClassId integer,startLine integer, endLine integer,commentText text,type text,location text,description text)";
+
+	private static final String CREATE_TABLE_PROCESSED_COMMENT = "CREATE TABLE IF NOT EXISTS processed_comment (id integer primary key autoincrement,"
+			+ "commentClassId integer,startLine integer, endLine integer,commentText text,type text,location text,description text)";
+
 	public static Connection getSqlite(){
 		Connection connection = null;
 
@@ -41,23 +50,21 @@ public class ConnectionFactory {
 	}
 
 	public static void verifyDataBase(){
-		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+
 		try {
-			String commentClass = "CREATE TABLE IF NOT EXISTS comment_class (id integer primary key autoincrement,projectName text,"
-					+ "fileName text,className text,access text,isAbstract text,isEnum text,isInterface text, startline integer, endline integer)";
-
-			PreparedStatement ps1 = dataBaseConnection.prepareStatement(commentClass);
-			ps1.execute();
-
-			String comment = "CREATE TABLE IF NOT EXISTS comment (id integer primary key autoincrement,	commentClassId integer,	startLine integer,"
-					+ "endLine integer,commentText text,type text,location text,description text)";
-
-			PreparedStatement ps2 = dataBaseConnection.prepareStatement(comment);
-			ps2.execute();
+			createTable(CREATE_TABLE_COMMENT_CLASS);
+			createTable(CREATE_TABLE_COMMENT);
+			createTable(CREATE_TABLE_PROCESSED_COMMENT);
 		}
 		catch(SQLException e){
 			System.out.println(e);
 		}
+	}
+
+	private static void createTable(String tableSql) throws SQLException {
+		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+		PreparedStatement ps = dataBaseConnection.prepareStatement(tableSql);
+		ps.execute();
 	}
 
 }

@@ -81,6 +81,10 @@ public class Comment {
 		this.type = type;
 	}
 
+	public CommentType getType() {
+		return type;
+	}
+	
 	public void setLocation(String location) {
 		this.location = location;
 	}
@@ -105,6 +109,29 @@ public class Comment {
 		this.endLine = endLine;
 	}
 
+	public int getEndLine() {
+		return endLine;
+	}
+
+
+	public void insertProcessed() {
+		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+		try {
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("INSERT INTO processed_comment (commentClassId, startLine, endLine, commentText, type, location, description) values(?,?,?,?,?,?,?)");
+			preparedStatement.setLong(1, this.classCommentId);
+			preparedStatement.setInt(2, this.startLine);
+			preparedStatement.setInt(3, this.endLine);
+			preparedStatement.setString(4, this.text);
+			preparedStatement.setString(5, this.type.toString());
+			preparedStatement.setString(6, this.location);
+			preparedStatement.setString(7, this.description);
+			preparedStatement.execute();
+			dataBaseConnection.close();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+	}
+	
 	public void insert(long classCommentId) {
 		Connection dataBaseConnection = ConnectionFactory.getSqlite();
 		try {
@@ -148,4 +175,5 @@ public class Comment {
 		}
 		return comments;
 	}
+
 }

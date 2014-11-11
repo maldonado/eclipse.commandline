@@ -11,12 +11,15 @@ public class CommentsExtractor {
 		int totalNumberClasses = systemObject.getClassNumber(); 
 		int counter = 0;
 		
-		for (ClassObject classObject : systemObject.getClassObjects()) {
-			CommentClass commentClass =  new CommentClass(classObject);
-			commentClass.insert();
-			counter ++;
-			System.out.println(counter + "out of:" + totalNumberClasses );
-		}
+//		for (ClassObject classObject : systemObject.getClassObjects()) {
+//			CommentClass commentClass =  new CommentClass(classObject);
+//			commentClass.insert();
+//			counter ++;
+//			System.out.println(counter + "out of:" + totalNumberClasses );
+//		}
+		
+		CommentProcessor processor = new CommentProcessor();
+		processor.process();
 		return true;
 	}
 }

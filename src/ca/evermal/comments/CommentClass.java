@@ -102,6 +102,14 @@ public class CommentClass {
 		return id;
 	}
 
+	public HashSet<Comment> getCommentList() {
+		return commentList;
+	}
+	
+	public int getStartLine() {
+		return startLine;
+	}
+
 	private HashSet<Comment> setCommentList(ListIterator<CommentObject> allComments, ListIterator<FieldObject> allFields, ListIterator<MethodObject> allMethods, ListIterator<ConstructorObject> allConstructors) {
 		HashSet<Comment> commentList = new HashSet<Comment>();
 		populateFieldComments(allComments, allFields, commentList);
@@ -220,7 +228,8 @@ public class CommentClass {
 				commentClass.set_abstract(resultSet.getString("isAbstract").equals("true") ? true : false);
 				commentClass.set_enum(resultSet.getString("isEnum").equals("true") ? true : false);
 				commentClass.set_interface(resultSet.getString("isInterface").equals("true") ? true : false);
-				commentClass.setAccess(Access.valueOf(resultSet.getString("access")));
+				String accessFromDB = resultSet.getString("access").toUpperCase().equals("") ? "NONE" : resultSet.getString("access").toUpperCase();
+				commentClass.setAccess(Access.valueOf(accessFromDB));
 				commentClass.setProjectName(resultSet.getString("projectName"));
 				commentClass.setFileName(resultSet.getString("fileName"));
 				commentClass.setClassName(resultSet.getString("className"));
@@ -229,9 +238,11 @@ public class CommentClass {
 				commentClass.setCommentList(Comment.findByCommentClassId(commentClass.getId()));
 				result.add(commentClass);
 			}
+			return result;
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
 		return result;
 	}
+
 }
