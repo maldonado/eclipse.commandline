@@ -207,9 +207,8 @@ public class CommentClass {
 			preparedStatement.setInt(9, endLine + LINE_CORRECTION);
 			preparedStatement.execute();
 			this.id = preparedStatement.getGeneratedKeys().getLong(1);
-			dataBaseConnection.close();
 			for (Comment comment : commentList) {
-				comment.insert(this.id);
+				comment.insert(dataBaseConnection, this.id);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

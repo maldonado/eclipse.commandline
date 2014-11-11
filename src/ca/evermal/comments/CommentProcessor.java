@@ -6,6 +6,7 @@ import java.util.HashSet;
 import ca.evermal.heuristics.Heuristic;
 import ca.evermal.heuristics.RemoveJavaDocComments;
 import ca.evermal.heuristics.RemoveLicenseComments;
+import ca.evermal.heuristics.RemoveSourceCodeComments;
 
 public class CommentProcessor {
 	
@@ -37,6 +38,7 @@ public class CommentProcessor {
 		HashSet<Heuristic> selection = new HashSet<Heuristic>();
 		selection.add(new RemoveJavaDocComments());
 		selection.add(new RemoveLicenseComments());
+		selection.add(new RemoveSourceCodeComments());
 		return selection;
 	}
 }

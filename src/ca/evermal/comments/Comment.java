@@ -77,6 +77,10 @@ public class Comment {
 		this.text = text;
 	}
 
+	public String getText() {
+		return text;
+	}
+
 	public void setType(CommentType type) {
 		this.type = type;
 	}
@@ -132,8 +136,7 @@ public class Comment {
 		}
 	}
 	
-	public void insert(long classCommentId) {
-		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+	public void insert(Connection dataBaseConnection, long classCommentId) {
 		try {
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("INSERT INTO comment (commentClassId, startLine, endLine, commentText, type, location, description) values(?,?,?,?,?,?,?)");
 			preparedStatement.setLong(1, classCommentId);
@@ -145,7 +148,6 @@ public class Comment {
 			preparedStatement.setString(7, this.description);
 			preparedStatement.execute();
 			this.id = preparedStatement.getGeneratedKeys().getLong(1);
-			dataBaseConnection.close();
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
@@ -154,7 +156,7 @@ public class Comment {
 	public static HashSet<Comment> findByCommentClassId(Connection dataBaseConnection, long classCommentId) {
 		HashSet<Comment> comments = new HashSet<Comment>();
 		try{
-			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment where commentClassId = ?");
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment where commentClassId = ? order by endLine");
 			preparedStatement.setLong(1, classCommentId);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			while(resultSet.next()){
