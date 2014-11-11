@@ -41,6 +41,8 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.PreferenceConstants;
 
+import ca.evermal.comments.CommentsExtractor;
+
 public class Application implements IApplication {
 
 	@Override

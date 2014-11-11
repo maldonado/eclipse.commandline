@@ -1,4 +1,4 @@
-package eclipse.commandline;
+package ca.evermal.comments;
 
 import gr.uom.java.ast.ASTReader;
 import gr.uom.java.ast.Access;
@@ -10,15 +10,21 @@ import gr.uom.java.ast.MethodObject;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.ListIterator;
 
 import org.eclipse.jdt.core.IJavaProject;
 
+import ca.evermal.util.ConnectionFactory;
+
 public class CommentClass {
 
 
+	private static final int LINE_CORRECTION = 1;
+	
 	private long id;
 	private boolean _abstract;
 	private boolean _enum;
@@ -28,7 +34,11 @@ public class CommentClass {
 	private String fileName;
 	private String className;
 	private HashSet<Comment> commentList;
+	private int startLine;
+	private int endLine;
 
+	public CommentClass(){};
+	
 	public CommentClass(ClassObject classObject){
 		IJavaProject examinedProject = ASTReader.getExaminedProject();
 		this.projectName = examinedProject.getElementName();
@@ -39,7 +49,57 @@ public class CommentClass {
 		this.access = classObject.getAccess();
 		this.fileName = classObject.getIFile().getName();
 		this.className = classObject.getName();
+		this.startLine =  classObject.getStartLine();
+		this.endLine = classObject.getEndLine();
 		this.commentList = setCommentList(classObject.getCommentIterator(), classObject.getFieldIterator(), classObject.getMethodIterator(), classObject.getConstructorIterator());
+	}
+	
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public void set_abstract(boolean _abstract) {
+		this._abstract = _abstract;
+	}
+
+	public void set_enum(boolean _enum) {
+		this._enum = _enum;
+	}
+
+	public void set_interface(boolean _interface) {
+		this._interface = _interface;
+	}
+
+	public void setAccess(Access access) {
+		this.access = access;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public void setCommentList(HashSet<Comment> commentList) {
+		this.commentList = commentList;
+	}
+
+	public void setStartLine(int startLine) {
+		this.startLine = startLine;
+	}
+
+	public void setEndLine(int endLine) {
+		this.endLine = endLine;
+	}
+
+	public long getId() {
+		return id;
 	}
 
 	private HashSet<Comment> setCommentList(ListIterator<CommentObject> allComments, ListIterator<FieldObject> allFields, ListIterator<MethodObject> allMethods, ListIterator<ConstructorObject> allConstructors) {
@@ -121,13 +181,12 @@ public class CommentClass {
 		}
 	}
 
-
 	public void insert() {
 		Connection dataBaseConnection = ConnectionFactory.getSqlite();
 		try {
 
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("INSERT INTO comment_class (projectName, "
-					+ "fileName, className, access, isAbstract, isEnum, isInterface) values (?,?,?,?,?,?,?)");
+					+ "fileName, className, access, isAbstract, isEnum, isInterface, startLine, endLine) values (?,?,?,?,?,?,?,?,?)");
 
 			preparedStatement.setString(1, this.projectName);
 			preparedStatement.setString(2, this.fileName);
@@ -136,6 +195,8 @@ public class CommentClass {
 			preparedStatement.setString(5, _abstract ? "true" : "false");
 			preparedStatement.setString(6, _enum ? "true" : "false");
 			preparedStatement.setString(7, _interface ? "true" : "false");
+			preparedStatement.setInt(8, startLine + LINE_CORRECTION);
+			preparedStatement.setInt(9, endLine + LINE_CORRECTION);
 			preparedStatement.execute();
 			this.id = preparedStatement.getGeneratedKeys().getLong(1);
 			dataBaseConnection.close();
@@ -143,7 +204,34 @@ public class CommentClass {
 				comment.insert(this.id);
 			}
 		} catch (SQLException e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
+	}
+
+	public static ArrayList<CommentClass> getAll() {
+		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
+		try{
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment_class");
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while(resultSet.next()){
+				CommentClass commentClass = new CommentClass();
+				commentClass.setId(resultSet.getLong("id"));
+				commentClass.set_abstract(resultSet.getString("isAbstract").equals("true") ? true : false);
+				commentClass.set_enum(resultSet.getString("isEnum").equals("true") ? true : false);
+				commentClass.set_interface(resultSet.getString("isInterface").equals("true") ? true : false);
+				commentClass.setAccess(Access.valueOf(resultSet.getString("access")));
+				commentClass.setProjectName(resultSet.getString("projectName"));
+				commentClass.setFileName(resultSet.getString("fileName"));
+				commentClass.setClassName(resultSet.getString("className"));
+				commentClass.setStartLine(resultSet.getInt("startLine")); 
+				commentClass.setEndLine(resultSet.getInt("endLine")); 
+				commentClass.setCommentList(Comment.findByCommentClassId(commentClass.getId()));
+				result.add(commentClass);
+			}
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return result;
 	}
 }

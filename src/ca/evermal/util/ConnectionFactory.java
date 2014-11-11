@@ -1,4 +1,4 @@
-package eclipse.commandline;
+package ca.evermal.util;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -7,6 +7,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
+
+import eclipse.commandline.Activator;
 
 public class ConnectionFactory {
 
@@ -17,7 +19,7 @@ public class ConnectionFactory {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			connection = DriverManager.getConnection("jdbc:sqlite:" +dataBasePath+ "comment_extractor.db");
+			connection = DriverManager.getConnection("jdbc:sqlite:" +dataBasePath+ "test.db");
 		} catch ( Exception e ) {
 			System.out.println(e);
 		}
@@ -42,7 +44,7 @@ public class ConnectionFactory {
 		Connection dataBaseConnection = ConnectionFactory.getSqlite();
 		try {
 			String commentClass = "CREATE TABLE IF NOT EXISTS comment_class (id integer primary key autoincrement,projectName text,"
-					+ "fileName text,className text,access text,isAbstract text,isEnum text,isInterface text)";
+					+ "fileName text,className text,access text,isAbstract text,isEnum text,isInterface text, startline integer, endline integer)";
 
 			PreparedStatement ps1 = dataBaseConnection.prepareStatement(commentClass);
 			ps1.execute();
