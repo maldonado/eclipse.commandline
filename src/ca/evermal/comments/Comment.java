@@ -151,9 +151,8 @@ public class Comment {
 		}
 	}
 
-	public static HashSet<Comment> findByCommentClassId(long classCommentId) {
+	public static HashSet<Comment> findByCommentClassId(Connection dataBaseConnection, long classCommentId) {
 		HashSet<Comment> comments = new HashSet<Comment>();
-		Connection dataBaseConnection = ConnectionFactory.getSqlite();
 		try{
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment where commentClassId = ?");
 			preparedStatement.setLong(1, classCommentId);

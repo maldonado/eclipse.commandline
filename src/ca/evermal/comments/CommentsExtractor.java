@@ -19,7 +19,7 @@ public class CommentsExtractor {
 //		}
 		
 		CommentProcessor processor = new CommentProcessor();
-		processor.process();
+		processor.execute();
 		return true;
 	}
 }

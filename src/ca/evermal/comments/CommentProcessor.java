@@ -1,22 +1,21 @@
 package ca.evermal.comments;
 
-import gr.uom.java.ast.CommentType;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import ca.evermal.heuristics.Heuristic;
+import ca.evermal.heuristics.RemoveJavaDocComments;
+import ca.evermal.heuristics.RemoveLicenseComments;
+
 public class CommentProcessor {
 	
-	public void process(){
-		
-		System.out.println("Loading inserted files");
+	public void execute(){
 		ArrayList<CommentClass> commentClasses = CommentClass.getAll();
-		System.out.println("classes load");
-		removeLicenseComments(commentClasses);
-		System.out.println("heuristic one done");
-		removeJavaDocComments(commentClasses);
-		System.out.println("heuristic two done");
-		
+		processHeuristics(selectHeuristics(), commentClasses);
+		insertProcessedComments(commentClasses);
+	}
+
+	private void insertProcessedComments(ArrayList<CommentClass> commentClasses) {
 		int totalNumberClasses = commentClasses.size(); 
 		int counter = 0;
 		for (CommentClass commentClass : commentClasses) {
@@ -28,32 +27,16 @@ public class CommentProcessor {
 		}
 	}
 	
-	private ArrayList<CommentClass> removeLicenseComments(ArrayList<CommentClass> commentClasses){
-		for (CommentClass commentClass : commentClasses) {
-			int classStartLine = commentClass.getStartLine();
-			HashSet<Comment> commentList = commentClass.getCommentList();
-			HashSet<Comment> filtered = new HashSet<Comment>();
-			for (Comment comment : commentList) {
-				if(comment.getEndLine() > classStartLine){
-					filtered.add(comment);
-				}
-			}
-			commentClass.setCommentList(filtered);
+	private void processHeuristics(HashSet<Heuristic> selectHeuristics, ArrayList<CommentClass> commentClasses) {
+		for (Heuristic heuristic : selectHeuristics) {
+			heuristic.process(commentClasses);
 		}
-		return commentClasses;
 	}
-	
-	private ArrayList<CommentClass> removeJavaDocComments(ArrayList<CommentClass> commentClasses){
-		for (CommentClass commentClass : commentClasses) {
-			HashSet<Comment> commentList = commentClass.getCommentList();
-			HashSet<Comment> filtered = new HashSet<Comment>();
-			for (Comment comment : commentList) {
-				if(!CommentType.JAVADOC.equals(comment.getType())){
-					filtered.add(comment);
-				}
-			}
-			commentClass.setCommentList(filtered);
-		}
-		return commentClasses;
+
+	private HashSet<Heuristic> selectHeuristics() {
+		HashSet<Heuristic> selection = new HashSet<Heuristic>();
+		selection.add(new RemoveJavaDocComments());
+		selection.add(new RemoveLicenseComments());
+		return selection;
 	}
 }

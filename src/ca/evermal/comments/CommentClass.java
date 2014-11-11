@@ -217,6 +217,7 @@ public class CommentClass {
 	}
 
 	public static ArrayList<CommentClass> getAll() {
+		System.out.println("Loading inserted comment_classes");
 		Connection dataBaseConnection = ConnectionFactory.getSqlite();
 		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
 		try{
@@ -235,9 +236,10 @@ public class CommentClass {
 				commentClass.setClassName(resultSet.getString("className"));
 				commentClass.setStartLine(resultSet.getInt("startLine")); 
 				commentClass.setEndLine(resultSet.getInt("endLine")); 
-				commentClass.setCommentList(Comment.findByCommentClassId(commentClass.getId()));
+				commentClass.setCommentList(Comment.findByCommentClassId(dataBaseConnection, commentClass.getId()));
 				result.add(commentClass);
 			}
+			System.out.println("comment_classes loaded...");
 			return result;
 		}catch(SQLException e){
 			e.printStackTrace();
