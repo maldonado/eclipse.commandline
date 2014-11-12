@@ -1,9 +1,9 @@
 package ca.evermal.comments;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import ca.evermal.heuristics.Heuristic;
+import ca.evermal.heuristics.MergeMultiLineComments;
 import ca.evermal.heuristics.RemoveJavaDocComments;
 import ca.evermal.heuristics.RemoveLicenseComments;
 import ca.evermal.heuristics.RemoveSourceCodeComments;
@@ -28,17 +28,18 @@ public class CommentProcessor {
 		}
 	}
 	
-	private void processHeuristics(HashSet<Heuristic> selectHeuristics, ArrayList<CommentClass> commentClasses) {
+	private void processHeuristics(ArrayList<Heuristic> selectHeuristics, ArrayList<CommentClass> commentClasses) {
 		for (Heuristic heuristic : selectHeuristics) {
 			heuristic.process(commentClasses);
 		}
 	}
 
-	private HashSet<Heuristic> selectHeuristics() {
-		HashSet<Heuristic> selection = new HashSet<Heuristic>();
+	private ArrayList<Heuristic> selectHeuristics() {
+		ArrayList<Heuristic> selection = new ArrayList<Heuristic>();
 		selection.add(new RemoveJavaDocComments());
 		selection.add(new RemoveLicenseComments());
 		selection.add(new RemoveSourceCodeComments());
+		selection.add(new MergeMultiLineComments());
 		return selection;
 	}
 }

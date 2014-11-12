@@ -13,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.ListIterator;
 
 import org.eclipse.jdt.core.IJavaProject;
@@ -33,7 +32,7 @@ public class CommentClass {
 	private String projectName;
 	private String fileName;
 	private String className;
-	private HashSet<Comment> commentList;
+	private ArrayList<Comment> commentList;
 	private int startLine;
 	private int endLine;
 
@@ -86,7 +85,7 @@ public class CommentClass {
 		this.className = className;
 	}
 
-	public void setCommentList(HashSet<Comment> commentList) {
+	public void setCommentList(ArrayList<Comment> commentList) {
 		this.commentList = commentList;
 	}
 
@@ -102,7 +101,7 @@ public class CommentClass {
 		return id;
 	}
 
-	public HashSet<Comment> getCommentList() {
+	public ArrayList<Comment> getCommentList() {
 		return commentList;
 	}
 	
@@ -110,8 +109,8 @@ public class CommentClass {
 		return startLine;
 	}
 
-	private HashSet<Comment> setCommentList(ListIterator<CommentObject> allComments, ListIterator<FieldObject> allFields, ListIterator<MethodObject> allMethods, ListIterator<ConstructorObject> allConstructors) {
-		HashSet<Comment> commentList = new HashSet<Comment>();
+	private ArrayList<Comment> setCommentList(ListIterator<CommentObject> allComments, ListIterator<FieldObject> allFields, ListIterator<MethodObject> allMethods, ListIterator<ConstructorObject> allConstructors) {
+		ArrayList<Comment> commentList = new ArrayList<Comment>();
 		populateFieldComments(allComments, allFields, commentList);
 		populateConstructorComments(allComments, allConstructors, commentList);
 		populateMethodsCommients(allComments, allMethods, commentList);
@@ -119,7 +118,7 @@ public class CommentClass {
 		return commentList;
 	}
 
-	private void populateClassComments(ListIterator<CommentObject> allComments, HashSet<Comment> commentList) {
+	private void populateClassComments(ListIterator<CommentObject> allComments, ArrayList<Comment> commentList) {
 		while(allComments.hasNext()){
 			Comment comment = new Comment(this.className, allComments.next());
 			commentList.add(comment);
@@ -127,7 +126,7 @@ public class CommentClass {
 	}
 
 	private void populateMethodsCommients(ListIterator<CommentObject> allComments,
-			ListIterator<MethodObject> allMethods, HashSet<Comment> commentList) {
+			ListIterator<MethodObject> allMethods, ArrayList<Comment> commentList) {
 		while(allMethods.hasNext()){
 			MethodObject method = allMethods.next();
 			ListIterator<CommentObject> methodComments = method.getCommentListIterator();
@@ -148,7 +147,7 @@ public class CommentClass {
 	}
 
 	private void populateConstructorComments(ListIterator<CommentObject> allComments,
-			ListIterator<ConstructorObject> allConstructors, HashSet<Comment> commentList) {
+			ListIterator<ConstructorObject> allConstructors, ArrayList<Comment> commentList) {
 		while(allConstructors.hasNext()){
 			ConstructorObject constructor = allConstructors.next();
 			ListIterator<CommentObject> constructorComments = constructor.getCommentListIterator();
@@ -169,7 +168,7 @@ public class CommentClass {
 	}
 
 	private void populateFieldComments(ListIterator<CommentObject> allComments, ListIterator<FieldObject> allFields,
-			HashSet<Comment> commentList) {
+			ArrayList<Comment> commentList) {
 		while(allFields.hasNext()){
 			FieldObject field = allFields.next();
 			ListIterator<CommentObject> fieldComments = field.getCommentListIterator();

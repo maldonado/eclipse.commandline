@@ -18,8 +18,7 @@ public class CommentsExtractor {
 			System.out.println(counter + "out of:" + totalNumberClasses );
 		}
 		
-		CommentProcessor processor = new CommentProcessor();
-		processor.execute();
+		
 		return true;
 	}
 }

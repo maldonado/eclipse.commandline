@@ -10,7 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.util.ArrayList;
 
 import ca.evermal.util.ConnectionFactory;
 
@@ -117,6 +117,9 @@ public class Comment {
 		return endLine;
 	}
 
+	public int getStartLine() {
+		return startLine;
+	}
 
 	public void insertProcessed() {
 		Connection dataBaseConnection = ConnectionFactory.getSqlite();
@@ -153,8 +156,45 @@ public class Comment {
 		}
 	}
 
-	public static HashSet<Comment> findByCommentClassId(Connection dataBaseConnection, long classCommentId) {
-		HashSet<Comment> comments = new HashSet<Comment>();
+	public void delete() {
+		try {
+			Connection dataBaseConnection = ConnectionFactory.getSqlite();
+			PreparedStatement preparedStatement = dataBaseConnection .prepareStatement("DELETE from comment where id=?");
+			preparedStatement.setLong(1, this.id);
+			preparedStatement.execute();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void update() {
+		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+		try{
+			PreparedStatement preparedStatement = dataBaseConnection .prepareStatement("UPDATE comment set commentClassId=?, startLine=?, endLine=?, commentText=?, type=?, location=?, description=? where id =?");
+			preparedStatement.setLong(1, this.classCommentId);
+			preparedStatement.setInt(2, this.startLine);
+			preparedStatement.setInt(3, this.endLine);
+			preparedStatement.setString(4, this.text);
+			preparedStatement.setString(5, this.type.toString());
+			preparedStatement.setString(6, this.location);
+			preparedStatement.setString(7, this.description);
+			preparedStatement.setLong(8, this.id);
+			preparedStatement.execute();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+	}
+
+	public static ArrayList<Comment> findByCommentClassId(Connection dataBaseConnection, long classCommentId) {
+		return findByCommentClassID(dataBaseConnection, classCommentId);
+	}
+	
+	public static ArrayList<Comment> findByCommentClassId(long classCommentId) {
+		return findByCommentClassID(ConnectionFactory.getSqlite(), classCommentId);
+	}
+
+	private static ArrayList<Comment> findByCommentClassID(Connection dataBaseConnection, long classCommentId) {
+		ArrayList<Comment> comments = new ArrayList<Comment>();
 		try{
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment where commentClassId = ? order by endLine");
 			preparedStatement.setLong(1, classCommentId);
@@ -176,5 +216,4 @@ public class Comment {
 		}
 		return comments;
 	}
-
 }
