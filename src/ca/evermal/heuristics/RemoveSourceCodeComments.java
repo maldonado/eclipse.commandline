@@ -19,9 +19,19 @@ public class RemoveSourceCodeComments implements Heuristic{
 			+ "while\\s*\\(|"
 			+ "switch\\s*\\(|"
 			+ "Long\\s*\\(|"
+			+ "Byte\\s*\\(|"
+			+ "Double\\s*\\(|"
+			+ "Float\\s*\\(|"
+			+ "Integer\\s*\\(|"
+			+ "Short\\s*\\(|"
+			+ "BigDecimal\\s*\\(|"
+			+ "BigInteger\\s*\\(|"
+			+ "Character\\s*\\(|"
+			+ "Boolean\\s*\\(|"
+			+ "String\\s*\\(|"
 			+ "assert\\s*\\(|"
 			+ "catch\\s*\\("; 
-	
+
 	public RemoveSourceCodeComments(){
 		System.out.println("Remove SourceCode comments selected.");
 	}
