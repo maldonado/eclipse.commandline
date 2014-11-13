@@ -1,7 +1,5 @@
 package ca.evermal.heuristics;
 
-import gr.uom.java.ast.CommentType;
-
 import java.util.ArrayList;
 
 import ca.evermal.comments.Comment;
@@ -17,10 +15,11 @@ public class RemoveLicenseComments implements Heuristic{
 	public ArrayList<CommentClass> process(ArrayList<CommentClass> commentClasses) {
 		System.out.println("Starting Remove License comments heuristic");
 		for (CommentClass commentClass : commentClasses) {
+			int classStartLine = commentClass.getStartLine();
 			ArrayList<Comment> commentList = commentClass.getCommentList();
 			ArrayList<Comment> filtered = new ArrayList<Comment>();
 			for (Comment comment : commentList) {
-				if(!CommentType.JAVADOC.equals(comment.getType())){
+				if(comment.getEndLine() > classStartLine){
 					filtered.add(comment);
 				}
 			}

@@ -2,7 +2,6 @@ package ca.evermal.comments;
 
 import java.util.ArrayList;
 
-import ca.evermal.heuristics.FilterTaskComments;
 import ca.evermal.heuristics.Heuristic;
 import ca.evermal.heuristics.MergeMultiLineComments;
 import ca.evermal.heuristics.RemoveJavaDocComments;
@@ -37,7 +36,7 @@ public class CommentProcessor {
 
 	private ArrayList<Heuristic> selectHeuristics() {
 		ArrayList<Heuristic> selection = new ArrayList<Heuristic>();
-		selection.add(new FilterTaskComments());
+//		selection.add(new FilterTaskComments());
 		selection.add(new RemoveJavaDocComments());
 		selection.add(new RemoveLicenseComments());
 		selection.add(new RemoveSourceCodeComments());
