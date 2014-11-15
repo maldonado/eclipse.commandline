@@ -11,7 +11,7 @@ import ca.evermal.comments.CommentClass;
 
 public class RemoveJavaDocComments implements Heuristic {
 
-	private static final String SOURCE_CODE_REGEX = "TODO:";
+	private static final String REGEX = "TODO:";
 	
 	public RemoveJavaDocComments(){
 		System.out.println("Remove JAVADOC comments selected.");
@@ -19,8 +19,8 @@ public class RemoveJavaDocComments implements Heuristic {
 	
 	@Override
 	public ArrayList<CommentClass> process(ArrayList<CommentClass> commentClasses) {
-		System.out.println("Starting heuristic: Remove JAVADOC comments");
-		Pattern pattern = Pattern.compile(SOURCE_CODE_REGEX);
+		System.out.println("Starting Remove JAVADOC comments heuristic");
+		Pattern pattern = Pattern.compile(REGEX);
 		for (CommentClass commentClass : commentClasses) {
 			ArrayList<Comment> commentList = commentClass.getCommentList();
 			ArrayList<Comment> filtered = new ArrayList<Comment>();

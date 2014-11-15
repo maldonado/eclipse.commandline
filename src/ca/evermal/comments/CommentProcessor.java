@@ -3,7 +3,6 @@ package ca.evermal.comments;
 import java.util.ArrayList;
 
 import ca.evermal.heuristics.Heuristic;
-import ca.evermal.heuristics.MergeMultiLineComments;
 import ca.evermal.heuristics.RemoveJavaDocComments;
 import ca.evermal.heuristics.RemoveLicenseComments;
 import ca.evermal.heuristics.RemoveSourceCodeComments;
@@ -14,6 +13,7 @@ public class CommentProcessor {
 		ArrayList<CommentClass> commentClasses = CommentClass.getAll();
 		processHeuristics(selectHeuristics(), commentClasses);
 		insertProcessedComments(commentClasses);
+		MergeMultiLineComments.Start(commentClasses);
 	}
 
 	private void insertProcessedComments(ArrayList<CommentClass> commentClasses) {
@@ -24,7 +24,7 @@ public class CommentProcessor {
 				comment.insertProcessed();
 			}
 			counter ++;
-			System.out.println(counter + "out of:" + totalNumberClasses );
+			System.out.println(counter + " out of: " + totalNumberClasses );
 		}
 	}
 	
@@ -40,7 +40,6 @@ public class CommentProcessor {
 		selection.add(new RemoveJavaDocComments());
 		selection.add(new RemoveLicenseComments());
 		selection.add(new RemoveSourceCodeComments());
-		selection.add(new MergeMultiLineComments());
 		return selection;
 	}
 }

@@ -199,9 +199,10 @@ public class Application implements IApplication {
 //		}
 //
 //		workspace.save(true, null);
+		
+//		processOpenJavaProjects(root);
 		CommentProcessor processor = new CommentProcessor();
 		processor.execute();
-//		processOpenJavaProjects(root);
 		return IApplication.EXIT_OK;
 	}
 
@@ -221,7 +222,7 @@ public class Application implements IApplication {
 					}
 					SystemObject systemObject = ASTReader.getSystemObject();
 					CommentsExtractor.extractFrom(systemObject);
-					
+//					break;
 //					List<MoveMethodCandidateRefactoring> moveMethodCandidateList = Standalone.getMoveMethodRefactoringOpportunities(jproject);
 //					System.out.println("Move Method Refactoring Opportunities:");
 //					for(MoveMethodCandidateRefactoring candidate : moveMethodCandidateList) {
@@ -257,8 +258,8 @@ public class Application implements IApplication {
 				}
 			}
 		}
-		CommentProcessor processor = new CommentProcessor();
-		processor.execute();
+//		CommentProcessor processor = new CommentProcessor();
+//		processor.execute();
 	}
 
 	private List<IResource> findFileResources(IFolder resource, String extension) {

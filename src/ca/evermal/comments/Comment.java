@@ -73,6 +73,10 @@ public class Comment {
 		this.classCommentId = classCommentId;
 	}
 
+	public long getClassCommentId() {
+		return this.classCommentId;
+	}
+
 	public void setText(String text) {
 		this.text = text;
 	}
@@ -122,26 +126,16 @@ public class Comment {
 	}
 
 	public void insertProcessed() {
-		Connection dataBaseConnection = ConnectionFactory.getSqlite();
-		try {
-			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("INSERT INTO processed_comment (commentClassId, startLine, endLine, commentText, type, location, description) values(?,?,?,?,?,?,?)");
-			preparedStatement.setLong(1, this.classCommentId);
-			preparedStatement.setInt(2, this.startLine);
-			preparedStatement.setInt(3, this.endLine);
-			preparedStatement.setString(4, this.text);
-			preparedStatement.setString(5, this.type.toString());
-			preparedStatement.setString(6, this.location);
-			preparedStatement.setString(7, this.description);
-			preparedStatement.execute();
-			dataBaseConnection.close();
-		}catch(SQLException e){
-			e.printStackTrace();
-		}
+		executeInsert(ConnectionFactory.getSqlite(), this.classCommentId, "INSERT INTO processed_comment (commentClassId, startLine, endLine, commentText, type, location, description) values(?,?,?,?,?,?,?)");
 	}
 	
 	public void insert(Connection dataBaseConnection, long classCommentId) {
+		executeInsert(dataBaseConnection, classCommentId, "INSERT INTO comment (commentClassId, startLine, endLine, commentText, type, location, description) values(?,?,?,?,?,?,?)");
+	}
+
+	private void executeInsert(Connection dataBaseConnection, long classCommentId, String sql) {
 		try {
-			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("INSERT INTO comment (commentClassId, startLine, endLine, commentText, type, location, description) values(?,?,?,?,?,?,?)");
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement(sql);
 			preparedStatement.setLong(1, classCommentId);
 			preparedStatement.setInt(2, this.startLine);
 			preparedStatement.setInt(3, this.endLine);
@@ -150,16 +144,24 @@ public class Comment {
 			preparedStatement.setString(6, this.location);
 			preparedStatement.setString(7, this.description);
 			preparedStatement.execute();
-			this.id = preparedStatement.getGeneratedKeys().getLong(1);
+//			this.id = preparedStatement.getGeneratedKeys().getLong(1);
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
 	}
-
+	
 	public void delete() {
+		executeDelete("DELETE from comment where id=?");
+	}
+
+	public void deleteProcessed(){
+		executeDelete("DELETE from processed_comment where id=?");
+	}
+	
+	private void executeDelete(String sql) {
 		try {
 			Connection dataBaseConnection = ConnectionFactory.getSqlite();
-			PreparedStatement preparedStatement = dataBaseConnection .prepareStatement("DELETE from comment where id=?");
+			PreparedStatement preparedStatement = dataBaseConnection .prepareStatement(sql);
 			preparedStatement.setLong(1, this.id);
 			preparedStatement.execute();
 		}catch(SQLException e){
@@ -168,9 +170,17 @@ public class Comment {
 	}
 	
 	public void update() {
+		executeUpdate("UPDATE comment set commentClassId=?, startLine=?, endLine=?, commentText=?, type=?, location=?, description=? where id =?");
+	}
+	
+	public void updateProcessed() {
+		executeUpdate("UPDATE processed_comment set commentClassId=?, startLine=?, endLine=?, commentText=?, type=?, location=?, description=? where id =?");
+	}
+
+	private void executeUpdate(String sql) {
 		Connection dataBaseConnection = ConnectionFactory.getSqlite();
 		try{
-			PreparedStatement preparedStatement = dataBaseConnection .prepareStatement("UPDATE comment set commentClassId=?, startLine=?, endLine=?, commentText=?, type=?, location=?, description=? where id =?");
+			PreparedStatement preparedStatement = dataBaseConnection .prepareStatement(sql);
 			preparedStatement.setLong(1, this.classCommentId);
 			preparedStatement.setInt(2, this.startLine);
 			preparedStatement.setInt(3, this.endLine);
@@ -186,17 +196,17 @@ public class Comment {
 	}
 
 	public static ArrayList<Comment> findByCommentClassId(Connection dataBaseConnection, long classCommentId) {
-		return findByCommentClassID(dataBaseConnection, classCommentId);
+		return findByCommentClassID(dataBaseConnection, classCommentId, "SELECT * FROM comment where commentClassId = ? order by endLine");
 	}
 	
-	public static ArrayList<Comment> findByCommentClassId(long classCommentId) {
-		return findByCommentClassID(ConnectionFactory.getSqlite(), classCommentId);
+	public static ArrayList<Comment> findProcessedByCommentClassId(long classCommentId) {
+		return findByCommentClassID(ConnectionFactory.getSqlite(), classCommentId, "SELECT * FROM processed_comment where commentClassId = ? order by endLine");
 	}
 
-	private static ArrayList<Comment> findByCommentClassID(Connection dataBaseConnection, long classCommentId) {
+	private static ArrayList<Comment> findByCommentClassID(Connection dataBaseConnection, long classCommentId, String sql) {
 		ArrayList<Comment> comments = new ArrayList<Comment>();
 		try{
-			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment where commentClassId = ? order by endLine");
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement(sql);
 			preparedStatement.setLong(1, classCommentId);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			while(resultSet.next()){

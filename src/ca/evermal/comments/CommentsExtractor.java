@@ -15,7 +15,7 @@ public class CommentsExtractor {
 			CommentClass commentClass =  new CommentClass(classObject);
 			commentClass.insert();
 			counter ++;
-			System.out.println(counter + "out of:" + totalNumberClasses );
+			System.out.println(counter + " out of: " + totalNumberClasses );
 		}
 		return true;
 	}
