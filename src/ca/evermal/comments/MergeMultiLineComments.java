@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 public class MergeMultiLineComments{
+	
+//  FIXME: you are NOT MERGING COMMENTS WITH MORE THEN  TWO LINES PROPERLY.
 
 	public static void Start(ArrayList<CommentClass> commentClasses) {
 		System.out.println("Starting Merge Mult-line comments post-heuristc");

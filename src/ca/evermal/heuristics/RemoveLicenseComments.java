@@ -9,7 +9,10 @@ import ca.evermal.comments.CommentClass;
 
 public class RemoveLicenseComments implements Heuristic{
 	
-	private static final String REGEX = "TODO:";
+	private static final String REGEX = 
+			"TODO:|"
+			+ "XXX|"
+			+ "FIXME";
 
 	public RemoveLicenseComments(){
 		System.out.println("Remove License comments selected.");

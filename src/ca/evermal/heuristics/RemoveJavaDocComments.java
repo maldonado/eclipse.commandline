@@ -11,12 +11,15 @@ import ca.evermal.comments.CommentClass;
 
 public class RemoveJavaDocComments implements Heuristic {
 
-	private static final String REGEX = "TODO:";
-	
+	private static final String REGEX = 
+			"TODO:|"
+			+ "XXX|"
+			+ "FIXME";
+
 	public RemoveJavaDocComments(){
 		System.out.println("Remove JAVADOC comments selected.");
 	}
-	
+
 	@Override
 	public ArrayList<CommentClass> process(ArrayList<CommentClass> commentClasses) {
 		System.out.println("Starting Remove JAVADOC comments heuristic");
