@@ -21,8 +21,10 @@ public class ConnectionFactory {
 			+ "commentClassId integer,startLine integer, endLine integer,commentText text,type text,location text,description text)";
 
 	private static final String CREATE_TABLE_PROCESSED_COMMENT = "CREATE TABLE IF NOT EXISTS processed_comment (id integer primary key autoincrement,"
-			+ "commentClassId integer,startLine integer, endLine integer,commentText text,type text,location text,description text)";
+			+ "commentClassId integer,startLine integer, endLine integer,commentText text,type text,location text,description text, dictionary_hit integer, "
+			+ "jdeodorant_hit integer, refactoring_list_name text)";
 
+	
 	public static Connection getSqlite(){
 		Connection connection = null;
 

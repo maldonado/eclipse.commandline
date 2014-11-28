@@ -84,6 +84,10 @@ public class CommentClass {
 	public void setClassName(String className) {
 		this.className = className;
 	}
+	
+	public String getClassName() {
+		return className;
+	}
 
 	public void setCommentList(ArrayList<Comment> commentList) {
 		this.commentList = commentList;
@@ -107,6 +111,10 @@ public class CommentClass {
 	
 	public int getStartLine() {
 		return startLine;
+	}
+
+	public String getProjectName() {
+		return projectName;
 	}
 
 	private ArrayList<Comment> setCommentList(ListIterator<CommentObject> allComments, ListIterator<FieldObject> allFields, ListIterator<MethodObject> allMethods, ListIterator<ConstructorObject> allConstructors) {
@@ -235,6 +243,39 @@ public class CommentClass {
 				commentClass.setStartLine(resultSet.getInt("startLine")); 
 				commentClass.setEndLine(resultSet.getInt("endLine")); 
 				commentClass.setCommentList(Comment.findByCommentClassId(dataBaseConnection, commentClass.getId()));
+				result.add(commentClass);
+			}
+			System.out.println("comment_classes loaded...");
+			return result;
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public static ArrayList<CommentClass> getDictionaryMatchedByProject(String projectName) {
+		System.out.println("Loading inserted comment_classes");
+		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
+		try{
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment_class a, "
+					+ "processed_comment b where a.id = b.commentClassId and b.dictionary_hit = 1 and a.projectName=?");
+			preparedStatement.setString(1, projectName);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while(resultSet.next()){
+				CommentClass commentClass = new CommentClass();
+				commentClass.setId(resultSet.getLong("id"));
+				commentClass.set_abstract(resultSet.getString("isAbstract").equals("true") ? true : false);
+				commentClass.set_enum(resultSet.getString("isEnum").equals("true") ? true : false);
+				commentClass.set_interface(resultSet.getString("isInterface").equals("true") ? true : false);
+				String accessFromDB = resultSet.getString("access").toUpperCase().equals("") ? "NONE" : resultSet.getString("access").toUpperCase();
+				commentClass.setAccess(Access.valueOf(accessFromDB));
+				commentClass.setProjectName(resultSet.getString("projectName"));
+				commentClass.setFileName(resultSet.getString("fileName"));
+				commentClass.setClassName(resultSet.getString("className"));
+				commentClass.setStartLine(resultSet.getInt("startLine")); 
+				commentClass.setEndLine(resultSet.getInt("endLine")); 
+				commentClass.setCommentList(Comment.findProcessedByCommentClassId(dataBaseConnection, commentClass.getId()));
 				result.add(commentClass);
 			}
 			System.out.println("comment_classes loaded...");

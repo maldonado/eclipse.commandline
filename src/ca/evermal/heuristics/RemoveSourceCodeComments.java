@@ -9,7 +9,6 @@ import ca.evermal.comments.CommentClass;
 
 public class RemoveSourceCodeComments implements Heuristic{
 
-//	TODO: INCREMENT THE REGEX WITH SYSOUT , PUBLIC VOID , PRIVATE STATIC FINAL
 	
 	private static final String SOURCE_CODE_REGEX = 
 			"else\\s*\\{|"

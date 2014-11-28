@@ -4,7 +4,7 @@ import ca.evermal.util.ConnectionFactory;
 import gr.uom.java.ast.ClassObject;
 import gr.uom.java.ast.SystemObject;
 
-public class CommentsExtractor {
+public class CommentExtractor {
 	
 	public static boolean extractFrom(SystemObject systemObject){
 		ConnectionFactory.verifyDataBase();
