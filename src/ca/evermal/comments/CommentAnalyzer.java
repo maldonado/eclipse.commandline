@@ -1,7 +1,6 @@
 package ca.evermal.comments;
 
 import gr.uom.java.ast.ClassObject;
-import gr.uom.java.ast.MethodObject;
 import gr.uom.java.ast.Standalone;
 import gr.uom.java.ast.SystemObject;
 import gr.uom.java.distance.ExtractClassCandidateGroup;
@@ -11,7 +10,6 @@ import gr.uom.java.jdeodorant.refactoring.manipulators.TypeCheckEliminationGroup
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import org.eclipse.jdt.core.IJavaProject;
@@ -22,13 +20,18 @@ public class CommentAnalyzer {
 		ArrayList<CommentClass> commentClassesWithDictionaryMatches = CommentClass.getDictionaryMatchedByProject(projectName);
 		for (CommentClass commentClass : commentClassesWithDictionaryMatches) {
 			ClassObject classObject = systemObject.getClassObject(commentClass.getClassName());
+			
 			Set<ExtractClassCandidateGroup> extractClassRefactoringOpportunities = Standalone.getExtractClassRefactoringOpportunities(jproject, classObject);
 			Set<ASTSliceGroup> extractMethodRefactoringOpportunities = Standalone.getExtractMethodRefactoringOpportunities(jproject, classObject);
 			Set<TypeCheckEliminationGroup> typeCheckEliminationRefactoringOpportunities = Standalone.getTypeCheckEliminationRefactoringOpportunities(jproject, classObject);
 			List<MoveMethodCandidateRefactoring> moveMethodRefactoringOpportunities = Standalone.getMoveMethodRefactoringOpportunities(jproject, classObject);
 			
+			int counter = 0;
+			if (!extractClassRefactoringOpportunities.isEmpty() || !extractMethodRefactoringOpportunities.isEmpty() || !typeCheckEliminationRefactoringOpportunities.isEmpty() || !moveMethodRefactoringOpportunities.isEmpty()){
+				counter ++;
+			}
 			
-			
+			System.out.println(counter);
 			
 //			ListIterator<MethodObject> methodIterator = classObject.getMethodIterator();
 //			MethodObject foundMethod = null;			

@@ -18,7 +18,8 @@ public class ConnectionFactory {
 			+ "fileName text,className text,access text,isAbstract text,isEnum text,isInterface text, startline integer, endline integer)";
 
 	private static final String CREATE_TABLE_COMMENT = "CREATE TABLE IF NOT EXISTS comment (id integer primary key autoincrement,"
-			+ "commentClassId integer,startLine integer, endLine integer,commentText text,type text,location text,description text)";
+			+ "commentClassId integer,startLine integer, endLine integer,commentText text,type text,location text,description text , dictionary_hit integer, " 
+			+ "jdeodorant_hit integer, refactoring_list_name text)";
 
 	private static final String CREATE_TABLE_PROCESSED_COMMENT = "CREATE TABLE IF NOT EXISTS processed_comment (id integer primary key autoincrement,"
 			+ "commentClassId integer,startLine integer, endLine integer,commentText text,type text,location text,description text, dictionary_hit integer, "
@@ -30,7 +31,7 @@ public class ConnectionFactory {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			connection = DriverManager.getConnection("jdbc:sqlite:" +dataBasePath+ "test.db");
+			connection = DriverManager.getConnection("jdbc:sqlite:" +dataBasePath+ "new_db.db");
 		} catch ( Exception e ) {
 			System.out.println(e);
 		}

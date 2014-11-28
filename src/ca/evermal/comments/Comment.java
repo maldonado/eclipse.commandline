@@ -237,7 +237,7 @@ public class Comment {
 	}
 	
 	public static ArrayList<Comment> findProcessedByCommentClassId(Connection dataBaseConnection, long classCommentId) {
-		return findByCommentClassID(dataBaseConnection, classCommentId, "SELECT * FROM processed_comment where commentClassId = ? order by endLine");
+		return findByCommentClassID(dataBaseConnection, classCommentId, "SELECT * FROM processed_comment where commentClassId = ? and dictionary_hit = 1 order by endLine");
 	}
 
 	private static ArrayList<Comment> findByCommentClassID(Connection dataBaseConnection, long classCommentId, String sql) {
@@ -268,6 +268,7 @@ public class Comment {
 	}
 
 	public static void MatchDictionary() {
+		System.out.println("starting expression matcher");
 		String sql = "update processed_comment set dictionary_hit = 1 where commentText like '%future%may%' or commentText like '%future%better%' or commentText like '%future%enchance%' or commentText like '%future%change%' or commentText like '%quick%fix%' or commentText like '%temporary%until%' or commentText like '%place%somewhere%else%' or commentText like '%move%somewhere%else%'  "
 				+ " or commentText like '%used%other%place%' or commentText like '%it %may %change %' or commentText like '%this may change%' or commentText like '%todo%can%change%' or commentText like '%fixme%can%change%' or commentText like '%xxx%can%change%'  or commentText like '%not %sure %'  or commentText like '%dependency%cycle%' or commentText like '%code%cop%from%' or "
 				+ " commentText like '%copied%code%'  or commentText like '% any %reason%' or commentText like '%wrong%place%'  or  commentText like '%hairy%'  or  commentText like '%instead%could%'  or  commentText like '%ugly%' or  commentText like '%todo%avoid%' or commentText like '%fixme%avoid%' or commentText like '%xxx%avoid%' or commentText like '%should%avoid%' or  "
@@ -291,7 +292,7 @@ public class Comment {
 		try{
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement(sql);
 			preparedStatement.execute();
-			
+			System.out.println("done...");
 		}catch(Exception e){
 			e.printStackTrace();
 		}

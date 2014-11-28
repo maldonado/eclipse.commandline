@@ -258,7 +258,8 @@ public class CommentClass {
 		Connection dataBaseConnection = ConnectionFactory.getSqlite();
 		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
 		try{
-			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment_class a, "
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT a.id, a.projectName, a.fileName, a.className,"
+					+ "a.access, a.isAbstract, a.isEnum, a.isInterface, a.startLine, a.endLine FROM comment_class a, "
 					+ "processed_comment b where a.id = b.commentClassId and b.dictionary_hit = 1 and a.projectName=?");
 			preparedStatement.setString(1, projectName);
 			ResultSet resultSet = preparedStatement.executeQuery();

@@ -204,13 +204,13 @@ public class Application implements IApplication {
 		//
 		//		workspace.save(true, null);
 
-		//		processOpenJavaProjects(root);
-		CommentProcessor processor = new CommentProcessor();
-		processor.execute();
+		processOpenJavaProjects(root, false, false, true);
+//		CommentProcessor processor = new CommentProcessor();
+//		processor.execute();
 		return IApplication.EXIT_OK;
 	}
 
-	private void processOpenJavaProjects(IWorkspaceRoot root, boolean commentExtractor, boolean commentAnalyzer) throws CoreException {
+	private void processOpenJavaProjects(IWorkspaceRoot root, boolean commentExtractor, boolean commentProcessor, boolean commentAnalyzer ) throws CoreException {
 		IProject[] projects = root.getProjects();
 		for(IProject project : projects) {
 			if(project.isOpen()) {
@@ -228,6 +228,11 @@ public class Application implements IApplication {
 					if(commentExtractor){
 						SystemObject systemObject = ASTReader.getSystemObject();
 						CommentExtractor.extractFrom(systemObject);
+					}
+					if(commentProcessor){
+						CommentProcessor processor = new CommentProcessor();
+//						processor.execute();
+						processor.matcheExpressionDictionary();
 					}
 					if(commentAnalyzer){
 						CommentAnalyzer analyzer = new CommentAnalyzer();
