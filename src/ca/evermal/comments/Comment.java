@@ -100,6 +100,14 @@ public class Comment {
 		this.location = location;
 	}
 
+	public String getLocation() {
+		return location;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}

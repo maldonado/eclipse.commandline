@@ -45,6 +45,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.PreferenceConstants;
 
 import ca.evermal.comments.CommentAnalyzer;
+import ca.evermal.comments.CommentClass;
 import ca.evermal.comments.CommentProcessor;
 import ca.evermal.comments.CommentExtractor;
 
@@ -225,8 +226,9 @@ public class Application implements IApplication {
 						new ASTReader(jproject, null);
 					}
 
+					SystemObject systemObject = ASTReader.getSystemObject();
+					
 					if(commentExtractor){
-						SystemObject systemObject = ASTReader.getSystemObject();
 						CommentExtractor.extractFrom(systemObject);
 					}
 					if(commentProcessor){
@@ -235,8 +237,14 @@ public class Application implements IApplication {
 						processor.matcheExpressionDictionary();
 					}
 					if(commentAnalyzer){
-						CommentAnalyzer analyzer = new CommentAnalyzer();
-						analyzer.start(ASTReader.getSystemObject(), jproject, project.getName());
+						ArrayList<CommentClass> commentClassesWithDictionaryMatches = CommentClass.getDictionaryMatchedByProject(project.getName());
+						int counter = 0;
+						for (CommentClass commentClass : commentClassesWithDictionaryMatches) {
+							CommentAnalyzer analyzer = new CommentAnalyzer();
+							analyzer.start(systemObject, jproject, commentClass);
+							counter++;
+							System.out.println(counter + " out of :" + commentClassesWithDictionaryMatches.size());
+						}
 					}
 
 					//					break;

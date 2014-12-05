@@ -260,7 +260,7 @@ public class CommentClass {
 		try{
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT a.id, a.projectName, a.fileName, a.className,"
 					+ "a.access, a.isAbstract, a.isEnum, a.isInterface, a.startLine, a.endLine FROM comment_class a, "
-					+ "processed_comment b where a.id = b.commentClassId and b.dictionary_hit = 1 and a.projectName=?");
+					+ "processed_comment b where a.id = b.commentClassId and b.dictionary_hit = 1 and a.projectName=? group by a.id");
 			preparedStatement.setString(1, projectName);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			while(resultSet.next()){
