@@ -42,7 +42,7 @@ public class CommentAnalyzer {
 	}
 
 	private void checkForExtractClassRefactorings(IJavaProject jproject, ClassObject classObject, Comment comment) {
-		System.out.println("searching move method type checking opportunities");
+		System.out.println("searching extract class refactoring opportunities");
 		Set<ExtractClassCandidateGroup> extractClassRefactoringOpportunities = Standalone.getExtractClassRefactoringOpportunities(jproject, classObject);
 		for(ExtractClassCandidateGroup group : extractClassRefactoringOpportunities){
 			for(ExtractClassCandidateRefactoring candidate : group.getCandidates()){
@@ -61,7 +61,7 @@ public class CommentAnalyzer {
 
 	//	TODO: COMPARISON IS NOT PERFECT YET. METHODS CAN HAVE THE SAME NAME, HAVE TO TAKE IN CONSIDERATION THE PARAMETERS ALSO
 	private void checkTypeCheckingRefactorings(IJavaProject jproject, ClassObject classObject, Comment comment) {
-		System.out.println("searching move method type checking opportunities");
+		System.out.println("searching type checking opportunities");
 		Set<TypeCheckEliminationGroup> typeCheckEliminationRefactoringOpportunities = Standalone.getTypeCheckEliminationRefactoringOpportunities(jproject, classObject);
 		for(TypeCheckEliminationGroup eliminationGroup : typeCheckEliminationRefactoringOpportunities){
 			for(TypeCheckElimination candidate : eliminationGroup.getCandidates()){

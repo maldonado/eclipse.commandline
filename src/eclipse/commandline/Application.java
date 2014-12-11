@@ -51,6 +51,8 @@ import ca.evermal.comments.CommentExtractor;
 
 public class Application implements IApplication {
 
+	private static final int TRUE = 1;
+
 	@Override
 	public Object start(IApplicationContext arg0) throws Exception {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -242,9 +244,14 @@ public class Application implements IApplication {
 						for (CommentClass commentClass : commentClassesWithDictionaryMatches) {
 							CommentAnalyzer analyzer = new CommentAnalyzer();
 							analyzer.start(systemObject, jproject, commentClass);
+							commentClass.setAnalyzed(TRUE);
+							commentClass.update();
+							analyzer = null;
 							counter++;
 							System.out.println(counter + " out of :" + commentClassesWithDictionaryMatches.size());
+							System.gc();
 						}
+						project.close(null);
 					}
 
 					//					break;

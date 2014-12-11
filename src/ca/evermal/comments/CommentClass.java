@@ -35,6 +35,7 @@ public class CommentClass {
 	private ArrayList<Comment> commentList;
 	private int startLine;
 	private int endLine;
+	private int analyzed;
 
 	public CommentClass(){};
 	
@@ -93,6 +94,14 @@ public class CommentClass {
 		this.commentList = commentList;
 	}
 
+	public void setAnalyzed(int value){
+		this.analyzed = value;
+	}
+	
+	public int getAnalyzed(){
+		return this.analyzed;
+	}
+	
 	public void setStartLine(int startLine) {
 		this.startLine = startLine;
 	}
@@ -201,7 +210,7 @@ public class CommentClass {
 		try {
 
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("INSERT INTO comment_class (projectName, "
-					+ "fileName, className, access, isAbstract, isEnum, isInterface, startLine, endLine) values (?,?,?,?,?,?,?,?,?)");
+					+ "fileName, className, access, isAbstract, isEnum, isInterface, startLine, endLine, analyzed) values (?,?,?,?,?,?,?,?,?,?)");
 
 			preparedStatement.setString(1, this.projectName);
 			preparedStatement.setString(2, this.fileName);
@@ -212,6 +221,7 @@ public class CommentClass {
 			preparedStatement.setString(7, _interface ? "true" : "false");
 			preparedStatement.setInt(8, startLine + LINE_CORRECTION);
 			preparedStatement.setInt(9, endLine + LINE_CORRECTION);
+			preparedStatement.setInt(10, this.analyzed);
 			preparedStatement.execute();
 			this.id = preparedStatement.getGeneratedKeys().getLong(1);
 			for (Comment comment : commentList) {
@@ -222,6 +232,31 @@ public class CommentClass {
 		}
 	}
 
+	public void update(){
+		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+		try {
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("UPDATE comment_class set projectName = ?, fileName =?, "
+					+ "className = ?, access=? , isAbstract =?, isEnum =?, isInterface =?, startLine =?, endLine=?, analyzed=? where id =?");
+
+			preparedStatement.setString(1, this.projectName);
+			preparedStatement.setString(2, this.fileName);
+			preparedStatement.setString(3, this.className);
+			preparedStatement.setString(4, this.access.toString());
+			preparedStatement.setString(5, _abstract ? "true" : "false");
+			preparedStatement.setString(6, _enum ? "true" : "false");
+			preparedStatement.setString(7, _interface ? "true" : "false");
+			preparedStatement.setInt(8, this.startLine);
+			preparedStatement.setInt(9, this.endLine);
+			preparedStatement.setInt(10, this.analyzed);
+			preparedStatement.setLong(11, this.id);
+			preparedStatement.execute();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
 	public static ArrayList<CommentClass> getAll() {
 		System.out.println("Loading inserted comment_classes");
 		Connection dataBaseConnection = ConnectionFactory.getSqlite();
@@ -242,6 +277,7 @@ public class CommentClass {
 				commentClass.setClassName(resultSet.getString("className"));
 				commentClass.setStartLine(resultSet.getInt("startLine")); 
 				commentClass.setEndLine(resultSet.getInt("endLine")); 
+				commentClass.setAnalyzed(resultSet.getInt("analyzed"));
 				commentClass.setCommentList(Comment.findByCommentClassId(dataBaseConnection, commentClass.getId()));
 				result.add(commentClass);
 			}
@@ -259,8 +295,8 @@ public class CommentClass {
 		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
 		try{
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT a.id, a.projectName, a.fileName, a.className,"
-					+ "a.access, a.isAbstract, a.isEnum, a.isInterface, a.startLine, a.endLine FROM comment_class a, "
-					+ "processed_comment b where a.id = b.commentClassId and b.dictionary_hit = 1 and a.projectName=? group by a.id");
+					+ "a.access, a.isAbstract, a.isEnum, a.isInterface, a.startLine, a.endLine, a.analyzed FROM comment_class a, "
+					+ "processed_comment b where a.id = b.commentClassId and b.dictionary_hit = 1 and a.projectName=? and a.analyzed = 0 group by a.id ");
 			preparedStatement.setString(1, projectName);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			while(resultSet.next()){
@@ -276,6 +312,7 @@ public class CommentClass {
 				commentClass.setClassName(resultSet.getString("className"));
 				commentClass.setStartLine(resultSet.getInt("startLine")); 
 				commentClass.setEndLine(resultSet.getInt("endLine")); 
+				commentClass.setAnalyzed(resultSet.getInt("analyzed"));
 				commentClass.setCommentList(Comment.findProcessedByCommentClassId(dataBaseConnection, commentClass.getId()));
 				result.add(commentClass);
 			}
@@ -286,5 +323,4 @@ public class CommentClass {
 		}
 		return result;
 	}
-
 }

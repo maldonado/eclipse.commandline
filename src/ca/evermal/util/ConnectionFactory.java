@@ -15,7 +15,7 @@ public class ConnectionFactory {
 	private static final String dataBasePath = getPath();
 
 	private static final String CREATE_TABLE_COMMENT_CLASS ="CREATE TABLE IF NOT EXISTS comment_class (id integer primary key autoincrement,projectName text,"
-			+ "fileName text,className text,access text,isAbstract text,isEnum text,isInterface text, startline integer, endline integer)";
+			+ "fileName text,className text,access text,isAbstract text,isEnum text,isInterface text, startline integer, endline integer, analyzed integer)";
 
 	private static final String CREATE_TABLE_COMMENT = "CREATE TABLE IF NOT EXISTS comment (id integer primary key autoincrement,"
 			+ "commentClassId integer,startLine integer, endLine integer,commentText text,type text,location text,description text , dictionary_hit integer, " 
