@@ -242,14 +242,20 @@ public class Application implements IApplication {
 						ArrayList<CommentClass> commentClassesWithDictionaryMatches = CommentClass.getDictionaryMatchedByProject(project.getName());
 						int counter = 0;
 						for (CommentClass commentClass : commentClassesWithDictionaryMatches) {
-							CommentAnalyzer analyzer = new CommentAnalyzer();
-							analyzer.start(systemObject, jproject, commentClass);
+							try{
+							CommentAnalyzer.start(systemObject, jproject, commentClass);
 							commentClass.setAnalyzed(TRUE);
 							commentClass.update();
-							analyzer = null;
 							counter++;
 							System.out.println(counter + " out of :" + commentClassesWithDictionaryMatches.size());
 							System.gc();
+							}
+							catch(Exception e){
+								System.out.println("*****exception****");
+								commentClass.setAnalyzed(TRUE);
+								commentClass.update();
+								counter++;
+							}
 						}
 						project.close(null);
 					}
