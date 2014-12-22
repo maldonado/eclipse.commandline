@@ -207,9 +207,9 @@ public class Application implements IApplication {
 		//
 		//		workspace.save(true, null);
 
-		processOpenJavaProjects(root, false, false, true);
-//		CommentProcessor processor = new CommentProcessor();
-//		processor.execute();
+//		processOpenJavaProjects(root, false, false, false);
+		CommentProcessor processor = new CommentProcessor();
+		processor.execute();
 		return IApplication.EXIT_OK;
 	}
 
@@ -257,7 +257,7 @@ public class Application implements IApplication {
 								counter++;
 							}
 						}
-						project.close(null);
+//						project.close(null);
 					}
 
 					//					break;

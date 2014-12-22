@@ -262,7 +262,7 @@ public class CommentClass {
 		Connection dataBaseConnection = ConnectionFactory.getSqlite();
 		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
 		try{
-			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment_class");
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment_class where projectName like '%jmeter%'");
 			ResultSet resultSet = preparedStatement.executeQuery();
 			while(resultSet.next()){
 				CommentClass commentClass = new CommentClass();

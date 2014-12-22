@@ -14,7 +14,7 @@ public class CommentProcessor {
 		processHeuristics(selectHeuristics(), commentClasses);
 		insertProcessedComments(commentClasses);
 		MergeMultiLineComments.Start(commentClasses);
-		matcheExpressionDictionary();
+//		matcheExpressionDictionary();
 	}
 	
 	public void matcheExpressionDictionary(){

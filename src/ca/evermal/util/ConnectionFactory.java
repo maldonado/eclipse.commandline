@@ -31,7 +31,7 @@ public class ConnectionFactory {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			connection = DriverManager.getConnection("jdbc:sqlite:" +dataBasePath+ "experiment_one.db");
+			connection = DriverManager.getConnection("jdbc:sqlite:" +dataBasePath+ "heuristics_playground.db");
 		} catch ( Exception e ) {
 			System.out.println(e);
 		}
