@@ -9,10 +9,15 @@ import ca.evermal.comments.CommentClass;
 
 public class RemoveLicenseComments implements Heuristic{
 	
-	private static final String REGEX = 
+	private static final String REGEX_TO_KEEP = 
 			"TODO:|"
 			+ "XXX|"
 			+ "FIXME";
+	
+	private static final String REGEX_TO_ELININATE = 
+			"Copyright|"
+			+ "copyright|";
+			
 
 	public RemoveLicenseComments(){
 		System.out.println("Remove License comments selected.");
@@ -21,15 +26,18 @@ public class RemoveLicenseComments implements Heuristic{
 	@Override
 	public ArrayList<CommentClass> process(ArrayList<CommentClass> commentClasses) {
 		System.out.println("Starting Remove License comments heuristic");
-		Pattern pattern = Pattern.compile(REGEX);
 		for (CommentClass commentClass : commentClasses) {
 			int classStartLine = commentClass.getStartLine();
 			ArrayList<Comment> commentList = commentClass.getCommentList();
 			ArrayList<Comment> filtered = new ArrayList<Comment>();
 			for (Comment comment : commentList) {
 				if(comment.getEndLine() > classStartLine){
-					filtered.add(comment);
+					Pattern pattern = Pattern.compile(REGEX_TO_ELININATE);
+					Matcher matcher = pattern.matcher(comment.getText());
+					if(!matcher.find())
+						filtered.add(comment);
 				}else{
+					Pattern pattern = Pattern.compile(REGEX_TO_KEEP);
 					Matcher matcher = pattern.matcher(comment.getText());
 					if(matcher.find())
 						filtered.add(comment);
