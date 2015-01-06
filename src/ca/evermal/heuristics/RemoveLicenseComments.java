@@ -15,10 +15,8 @@ public class RemoveLicenseComments implements Heuristic{
 			+ "FIXME";
 	
 	private static final String REGEX_TO_ELININATE = 
-			"Copyright|"
-			+ "copyright|";
-			
-
+			"copyright";
+	
 	public RemoveLicenseComments(){
 		System.out.println("Remove License comments selected.");
 	}
@@ -32,7 +30,7 @@ public class RemoveLicenseComments implements Heuristic{
 			ArrayList<Comment> filtered = new ArrayList<Comment>();
 			for (Comment comment : commentList) {
 				if(comment.getEndLine() > classStartLine){
-					Pattern pattern = Pattern.compile(REGEX_TO_ELININATE);
+					Pattern pattern = Pattern.compile(REGEX_TO_ELININATE ,Pattern.CASE_INSENSITIVE);
 					Matcher matcher = pattern.matcher(comment.getText());
 					if(!matcher.find())
 						filtered.add(comment);

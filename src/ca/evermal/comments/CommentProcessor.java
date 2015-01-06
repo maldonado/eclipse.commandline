@@ -13,14 +13,13 @@ public class CommentProcessor {
 		ArrayList<CommentClass> commentClasses = CommentClass.getAll();
 		processHeuristics(selectHeuristics(), commentClasses);
 		insertProcessedComments(commentClasses);
-		MergeMultiLineComments.Start();
 //		matcheExpressionDictionary();
 	}
 	
 	public void matcheExpressionDictionary(){
 		Comment.MatchDictionary();
 	}
-
+	
 	private void insertProcessedComments(ArrayList<CommentClass> commentClasses) {
 		int totalNumberClasses = commentClasses.size(); 
 		int counter = 0;
@@ -46,5 +45,9 @@ public class CommentProcessor {
 		selection.add(new RemoveLicenseComments());
 		selection.add(new RemoveSourceCodeComments());
 		return selection;
+	}
+
+	public void executeMergeMultiLines() {
+		MergeMultiLineComments.Start();	
 	}
 }

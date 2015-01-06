@@ -186,6 +186,7 @@ public class Comment {
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
+
 	}
 	
 	public void delete() {

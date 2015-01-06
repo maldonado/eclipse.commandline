@@ -210,6 +210,7 @@ public class Application implements IApplication {
 //		processOpenJavaProjects(root, false, false, false);
 		CommentProcessor processor = new CommentProcessor();
 		processor.execute();
+		processor.executeMergeMultiLines();
 		return IApplication.EXIT_OK;
 	}
 
