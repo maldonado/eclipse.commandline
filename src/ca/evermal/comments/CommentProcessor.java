@@ -13,7 +13,7 @@ public class CommentProcessor {
 		ArrayList<CommentClass> commentClasses = CommentClass.getAll();
 		processHeuristics(selectHeuristics(), commentClasses);
 		insertProcessedComments(commentClasses);
-		MergeMultiLineComments.Start(commentClasses);
+		MergeMultiLineComments.Start();
 //		matcheExpressionDictionary();
 	}
 	

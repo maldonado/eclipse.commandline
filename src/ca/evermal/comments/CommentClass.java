@@ -288,6 +288,37 @@ public class CommentClass {
 		}
 		return result;
 	}
+	
+	public static ArrayList<CommentClass> getAllThatHasProcessedComments() {
+		System.out.println("Loading inserted comment_classes");
+		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
+		try{
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT a.* FROM comment_class a, processed_comment b where a.id = b.commentClassId and a.projectName like '%jmeter%'");
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while(resultSet.next()){
+				CommentClass commentClass = new CommentClass();
+				commentClass.setId(resultSet.getLong("id"));
+				commentClass.set_abstract(resultSet.getString("isAbstract").equals("true") ? true : false);
+				commentClass.set_enum(resultSet.getString("isEnum").equals("true") ? true : false);
+				commentClass.set_interface(resultSet.getString("isInterface").equals("true") ? true : false);
+				String accessFromDB = resultSet.getString("access").toUpperCase().equals("") ? "NONE" : resultSet.getString("access").toUpperCase();
+				commentClass.setAccess(Access.valueOf(accessFromDB));
+				commentClass.setProjectName(resultSet.getString("projectName"));
+				commentClass.setFileName(resultSet.getString("fileName"));
+				commentClass.setClassName(resultSet.getString("className"));
+				commentClass.setStartLine(resultSet.getInt("startLine")); 
+				commentClass.setEndLine(resultSet.getInt("endLine")); 
+				commentClass.setAnalyzed(resultSet.getInt("analyzed"));
+				result.add(commentClass);
+			}
+			System.out.println("comment_classes loaded...");
+			return result;
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return result;
+	}
 
 	public static ArrayList<CommentClass> getDictionaryMatchedByProject(String projectName) {
 		System.out.println("Loading inserted comment_classes");
