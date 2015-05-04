@@ -29,31 +29,31 @@ public class CommentAnalyzer {
 		System.out.println("processing:" + commentClass.getClassName());
 		ClassObject classObject = systemObject.getClassObject(commentClass.getClassName());
 
-//		moveMethodRefactoringOpportunities = Standalone.getMoveMethodRefactoringOpportunities(jproject, classObject);
-//		for(Comment comment : commentClass.getCommentList()){
-//			System.out.println("found comment located in the method level: " + comment.getDescription());
-//			checkMoveMethodRefactorings(jproject, classObject, comment);
-//		}
-//		moveMethodRefactoringOpportunities = null;
-//		System.out.println("processed move method");
+		moveMethodRefactoringOpportunities = Standalone.getMoveMethodRefactoringOpportunities(jproject, classObject);
+		for(Comment comment : commentClass.getCommentList()){
+			System.out.println("found comment located in the method level: " + comment.getDescription());
+			checkMoveMethodRefactorings(jproject, classObject, comment);
+		}
+		moveMethodRefactoringOpportunities = null;
+		System.out.println("processed move method");
 
 
-//		typeCheckEliminationRefactoringOpportunities = Standalone.getTypeCheckEliminationRefactoringOpportunities(jproject, classObject);
-//		for(Comment comment : commentClass.getCommentList()){
-//			System.out.println("found comment located in the method level: " + comment.getDescription());
-//			checkTypeCheckingRefactorings(jproject, classObject, comment);
-//		}
-//		typeCheckEliminationRefactoringOpportunities = null;
-//		System.out.println("processed  type check");
+		typeCheckEliminationRefactoringOpportunities = Standalone.getTypeCheckEliminationRefactoringOpportunities(jproject, classObject);
+		for(Comment comment : commentClass.getCommentList()){
+			System.out.println("found comment located in the method level: " + comment.getDescription());
+			checkTypeCheckingRefactorings(jproject, classObject, comment);
+		}
+		typeCheckEliminationRefactoringOpportunities = null;
+		System.out.println("processed  type check");
 
 
-//		extractClassRefactoringOpportunities = Standalone.getExtractClassRefactoringOpportunities(jproject, classObject);
-//		for(Comment comment : commentClass.getCommentList()){
-//			System.out.println("found comment located in the method level: " + comment.getDescription());
-//			checkForExtractClassRefactorings(jproject, classObject, comment);
-//		}
-//		extractClassRefactoringOpportunities = null;
-//		System.out.println("processed  extract class");
+		extractClassRefactoringOpportunities = Standalone.getExtractClassRefactoringOpportunities(jproject, classObject);
+		for(Comment comment : commentClass.getCommentList()){
+			System.out.println("found comment located in the method level: " + comment.getDescription());
+			checkForExtractClassRefactorings(jproject, classObject, comment);
+		}
+		extractClassRefactoringOpportunities = null;
+		System.out.println("processed  extract class");
 		
 		extractMethodRefactoringOpportunities = Standalone.getExtractMethodRefactoringOpportunities(jproject, classObject);
 		for(Comment comment : commentClass.getCommentList()){
