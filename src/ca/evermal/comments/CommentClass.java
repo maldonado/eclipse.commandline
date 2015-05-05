@@ -266,12 +266,13 @@ public class CommentClass {
 	
 	}
 	
-	public static ArrayList<CommentClass> getAll(Connection connection) {
+	public static ArrayList<CommentClass> getAll(Connection connection, String projectName) {
 		System.out.println("Loading inserted comment_classes");
 		Connection dataBaseConnection = connection;
 		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
 		try{
-			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment_class where projectName like '%emf%'");
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment_class where projectName=?");
+			preparedStatement.setString(1, projectName);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			while(resultSet.next()){
 				CommentClass commentClass = new CommentClass();
@@ -290,7 +291,7 @@ public class CommentClass {
 				commentClass.setCommentList(Comment.findByCommentClassId(dataBaseConnection, commentClass.getId()));
 				result.add(commentClass);
 			}
-			System.out.println("comment_classes loaded...");
+			System.out.println("comment_classes loaded for " + projectName);
 			return result;
 		}catch(SQLException e){
 			e.printStackTrace();
@@ -298,12 +299,13 @@ public class CommentClass {
 		return result;
 	}
 	
-	public static ArrayList<CommentClass> getAllThatHasProcessedComments(Connection connection) {
+	public static ArrayList<CommentClass> getAllThatHasProcessedComments(Connection connection, String projectName) {
 		System.out.println("Loading inserted comment_classes");
 		Connection dataBaseConnection = connection;
 		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
 		try{
-			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT a.* FROM comment_class a, processed_comment b where a.id = b.commentClassId and a.projectName like '%jmeter%'");
+			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT a.* FROM comment_class a, processed_comment b where a.id = b.commentClassId and a.projectName=?");
+			preparedStatement.setString(1, projectName);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			while(resultSet.next()){
 				CommentClass commentClass = new CommentClass();
@@ -353,7 +355,7 @@ public class CommentClass {
 				commentClass.setStartLine(resultSet.getInt("startLine")); 
 				commentClass.setEndLine(resultSet.getInt("endLine")); 
 				commentClass.setAnalyzed(resultSet.getInt("analyzed"));
-				commentClass.setCommentList(Comment.findProcessedByCommentClassId(dataBaseConnection, commentClass.getId()));
+				commentClass.setCommentList(Comment.findMatchedbyCommentClassId(dataBaseConnection, commentClass.getId()));
 				result.add(commentClass);
 			}
 			System.out.println("comment_classes loaded...");

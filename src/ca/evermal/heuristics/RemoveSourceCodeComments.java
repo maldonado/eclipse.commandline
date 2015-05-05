@@ -1,5 +1,6 @@
 package ca.evermal.heuristics;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,8 +8,15 @@ import java.util.regex.Pattern;
 import ca.evermal.comments.Comment;
 import ca.evermal.comments.CommentClass;
 
-public class RemoveSourceCodeComments implements Heuristic{
-
+public class RemoveSourceCodeComments {
+	
+	private String projectName;
+	private Connection connection;
+	
+	public RemoveSourceCodeComments(String projecName, Connection connection){
+		this.projectName = projecName;
+		this.connection = connection;
+	}
 	
 	private static final String SOURCE_CODE_REGEX = 
 			"else\\s*\\{|"
@@ -36,26 +44,19 @@ public class RemoveSourceCodeComments implements Heuristic{
 			+ "private\\s*static\\*final|"
 			+ "catch\\s*\\("; 
 
-	public RemoveSourceCodeComments(){
-		System.out.println("Remove SourceCode comments selected.");
-	}
-	
-	@Override
-	public ArrayList<CommentClass> process(ArrayList<CommentClass> commentClasses) {
+	public void process() {
 		System.out.println("Starting Remove SourceCode comments heuristic");
 		Pattern pattern = Pattern.compile(SOURCE_CODE_REGEX);
+		ArrayList<CommentClass> commentClasses = CommentClass.getAllThatHasProcessedComments(connection, projectName);
 		for (CommentClass commentClass : commentClasses) {
-			ArrayList<Comment> commentList = commentClass.getCommentList();
-			ArrayList<Comment> filtered = new ArrayList<Comment>();
+			ArrayList<Comment> commentList = Comment.findProcessedByCommentClassId(connection, commentClass.getId());
 			for (Comment comment : commentList) {
 				Matcher matcher = pattern.matcher(comment.getText());
-				if(!matcher.find()){
-					filtered.add(comment);
+				if(matcher.find()){
+					comment.deleteProcessed(connection);
 				}
 			}
-			commentClass.setCommentList(filtered);
 		}
 		System.out.println("Done...");
-		return commentClasses;
 	}
 }

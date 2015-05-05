@@ -2,29 +2,29 @@ package ca.evermal.comments;
 
 import gr.uom.java.ast.CommentType;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import ca.evermal.util.ConnectionFactory;
-
 public class MergeMultiLineComments{
 
-	private static boolean hasToMergeAgain = true;
+	private boolean hasToMergeAgain = true;
 
-	public static void Start() {
+	public void start(String projectName, Connection connection) {
 		System.out.println("Starting Merge Mult-line comments post-heuristc");
-		ArrayList<CommentClass> commentClasses = CommentClass.getAllThatHasProcessedComments(ConnectionFactory.getPostgresql());
+		
 		while(hasToMergeAgain){
 			hasToMergeAgain  = false;
+			ArrayList<CommentClass> commentClasses = CommentClass.getAllThatHasProcessedComments(connection, projectName);
 			for (CommentClass commentClass : commentClasses) {
-				ArrayList<Comment> commentList = Comment.findProcessedByCommentClassId(commentClass.getId());
-				mergeComments(commentList);
+				ArrayList<Comment> commentList = Comment.findProcessedByCommentClassId(connection, commentClass.getId());
+				mergeComments(commentList, connection);
 			}
 		}
 		System.out.println("Done...");
 	}
 
-	private static void mergeComments(ArrayList<Comment> commentList) {
+	private void mergeComments(ArrayList<Comment> commentList, Connection connection) {
 		ArrayList<Comment> sortedList = sortLineComments(commentList);
 		ListIterator<Comment> iterator = sortedList.listIterator();
 		while(iterator.hasNext()){
@@ -35,16 +35,16 @@ public class MergeMultiLineComments{
 			iterator.previous();
 			if((comment.getEndLine() - nextComment.getStartLine()) == -1){
 				hasToMergeAgain = true;
-				comment.setText(comment.getText().concat(nextComment.getText()));
+				comment.setText(comment.getText().concat(" ").concat(nextComment.getText()));
 				comment.setEndLine(nextComment.getEndLine());
 				comment.setType(CommentType.MULTLINE);
-				comment.updateProcessed();
-				nextComment.deleteProcessed();
+				comment.updateProcessed(connection);
+				nextComment.deleteProcessed(connection);
 			}
 		}
 	}
 	
-	private static ArrayList<Comment> sortLineComments(ArrayList<Comment> commentList){
+	private ArrayList<Comment> sortLineComments(ArrayList<Comment> commentList){
 		ArrayList<Comment> sortedComments =  new ArrayList<Comment>();
 		for (Comment comment : commentList) {	
 			if(CommentType.LINE.equals(comment.getType()) || CommentType.MULTLINE.equals(comment.getType()))

@@ -208,7 +208,7 @@ public class Application implements IApplication {
 		//
 		//		workspace.save(true, null);
 
-		processOpenJavaProjects(root, true, false, false);
+		processOpenJavaProjects(root, false, true, false);
 //		CommentProcessor processor = new CommentProcessor();
 //		processor.execute();
 //		processor.executeMergeMultiLines();
@@ -221,24 +221,30 @@ public class Application implements IApplication {
 			if(project.isOpen()) {
 				System.out.println("Running JDeodorant on project " + project.getName());
 				if(project.hasNature(JavaCore.NATURE_ID)) {
-					IJavaProject jproject = JavaCore.create(project);
-					CompilationUnitCache.getInstance().clearCache();
-					if(ASTReader.getSystemObject() != null && project.equals(ASTReader.getExaminedProject())) {
-						new ASTReader(jproject, ASTReader.getSystemObject(), null);
-					}
-					else {
-						new ASTReader(jproject, null);
-					}
-
-					SystemObject systemObject = ASTReader.getSystemObject();
+					SystemObject systemObject = null;
+					IJavaProject jproject = null;
 					
+					if(commentExtractor | commentAnalyzer){
+						jproject = JavaCore.create(project);
+						CompilationUnitCache.getInstance().clearCache();
+					
+						if(ASTReader.getSystemObject() != null && project.equals(ASTReader.getExaminedProject())) {
+							new ASTReader(jproject, ASTReader.getSystemObject(), null);
+						}
+						else {
+							new ASTReader(jproject, null);
+						}
+
+						systemObject = ASTReader.getSystemObject();
+					}
+										
 					if(commentExtractor){
 						CommentExtractor.extractFrom(systemObject);
 					}
 					if(commentProcessor){
-						CommentProcessor processor = new CommentProcessor();
-//						processor.execute();
-						processor.matcheExpressionDictionary();
+						CommentProcessor processor = new CommentProcessor(project.getName());
+						processor.execute();
+//						processor.matcheExpressionDictionary();
 					}
 					if(commentAnalyzer){
 						ArrayList<CommentClass> commentClassesWithDictionaryMatches = CommentClass.getDictionaryMatchedByProject(project.getName(), ConnectionFactory.getPostgresql());

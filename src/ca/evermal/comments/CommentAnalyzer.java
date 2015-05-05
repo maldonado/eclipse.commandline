@@ -17,6 +17,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.IJavaProject;
 
+import ca.evermal.util.ConnectionFactory;
+
 public class CommentAnalyzer {
 
 	private static final int TRUE = 1;
@@ -77,7 +79,7 @@ public class CommentAnalyzer {
 					if(comment.getDescription().equals(signature)){
 						comment.setJdeodorantHit(TRUE);
 						comment.setRefactoringListName("CHANGED METHOD IN GOD CLASS");
-						comment.updateProcessed();
+						comment.updateProcessed(ConnectionFactory.getPostgresql());
 						break;
 					}
 				}
@@ -96,7 +98,7 @@ public class CommentAnalyzer {
 				if(comment.getDescription().contains(candidate.getTypeCheckMethod().getName().toString())){
 					comment.setJdeodorantHit(TRUE);
 					comment.setRefactoringListName("MOVE METHOD");
-					comment.updateProcessed();
+					comment.updateProcessed(ConnectionFactory.getPostgresql());
 					break;
 				}	
 			}
@@ -113,7 +115,7 @@ public class CommentAnalyzer {
 				if(comment.getDescription().equals(candidate.getExtractedMethodSignature())){
 					comment.setJdeodorantHit(TRUE);
 					comment.setRefactoringListName("EXTRACT METHOD");
-					comment.updateProcessed();
+					comment.updateProcessed(ConnectionFactory.getPostgresql());
 					break;
 				}
 			}
@@ -128,7 +130,7 @@ public class CommentAnalyzer {
 			if(comment.getDescription().equals(signature)){
 				comment.setJdeodorantHit(TRUE);
 				comment.setRefactoringListName("MOVE METHOD");
-				comment.updateProcessed();	
+				comment.updateProcessed(ConnectionFactory.getPostgresql());	
 				break;
 			}
 		}

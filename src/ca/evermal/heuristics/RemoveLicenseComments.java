@@ -15,7 +15,8 @@ public class RemoveLicenseComments implements Heuristic{
 			+ "FIXME";
 	
 	private static final String REGEX_TO_ELININATE = 
-			"copyright";
+			"copyright|"
+			+ "Copyright";
 	
 	public RemoveLicenseComments(){
 		System.out.println("Remove License comments selected.");

@@ -160,8 +160,8 @@ public class Comment {
 		this.dictionaryHit = dictionaryHit;
 	}
 
-	public void insertProcessed() {
-		executeInsert(ConnectionFactory.getSqlite(), this.classCommentId, "INSERT INTO processed_comment (commentClassId, startLine, endLine, commentText, type, location, description, dictionary_hit, jdeodorant_hit, refactoring_list_name) values(?,?,?,?,?,?,?,?,?,?)");
+	public void insertProcessed(Connection dataBaseConnection) {
+		executeInsert(dataBaseConnection, this.classCommentId, "INSERT INTO processed_comment (commentClassId, startLine, endLine, commentText, type, location, description, dictionary_hit, jdeodorant_hit, refactoring_list_name) values(?,?,?,?,?,?,?,?,?,?)");
 	}
 	
 	public void insert(Connection dataBaseConnection, long classCommentId) {
@@ -182,24 +182,21 @@ public class Comment {
 			preparedStatement.setInt(9, this.jdeodorantHit);
 			preparedStatement.setString(10, this.refactoringListName);
 			preparedStatement.execute();
-//			this.id = preparedStatement.getGeneratedKeys().getLong(1);
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
-
 	}
 	
-	public void delete() {
-		executeDelete("DELETE from comment where id=?");
+	public void delete(Connection connection) {
+		executeDelete("DELETE from comment where id=?", connection);
 	}
 
-	public void deleteProcessed(){
-		executeDelete("DELETE from processed_comment where id=?");
+	public void deleteProcessed(Connection connection){
+		executeDelete("DELETE from processed_comment where id=?", connection);
 	}
 	
-	private void executeDelete(String sql) {
+	private void executeDelete(String sql, Connection dataBaseConnection) {
 		try {
-			Connection dataBaseConnection = ConnectionFactory.getSqlite();
 			PreparedStatement preparedStatement = dataBaseConnection .prepareStatement(sql);
 			preparedStatement.setLong(1, this.id);
 			preparedStatement.execute();
@@ -208,16 +205,15 @@ public class Comment {
 		}
 	}
 	
-	public void update() {
-		executeUpdate("UPDATE comment set commentClassId=?, startLine=?, endLine=?, commentText=?, type=?, location=?, description=?, dictionary_hit=?, jdeodorant_hit=?, refactoring_list_name=? where id =?");
+	public void update(Connection connection) {
+		executeUpdate("UPDATE comment set commentClassId=?, startLine=?, endLine=?, commentText=?, type=?, location=?, description=?, dictionary_hit=?, jdeodorant_hit=?, refactoring_list_name=? where id =?", connection);
 	}
 	
-	public void updateProcessed() {
-		executeUpdate("UPDATE processed_comment set commentClassId=?, startLine=?, endLine=?, commentText=?, type=?, location=?, description=?, dictionary_hit=?, jdeodorant_hit=?, refactoring_list_name=? where id =?");
+	public void updateProcessed(Connection connection) {
+		executeUpdate("UPDATE processed_comment set commentClassId=?, startLine=?, endLine=?, commentText=?, type=?, location=?, description=?, dictionary_hit=?, jdeodorant_hit=?, refactoring_list_name=? where id =?", connection);
 	}
 
-	private void executeUpdate(String sql) {
-		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+	private void executeUpdate(String sql, Connection dataBaseConnection) {
 		try{
 			PreparedStatement preparedStatement = dataBaseConnection .prepareStatement(sql);
 			preparedStatement.setLong(1, this.classCommentId);
@@ -241,11 +237,11 @@ public class Comment {
 		return findByCommentClassID(dataBaseConnection, classCommentId, "SELECT * FROM comment where commentClassId = ? order by endLine");
 	}
 	
-	public static ArrayList<Comment> findProcessedByCommentClassId(long classCommentId) {
-		return findByCommentClassID(ConnectionFactory.getSqlite(), classCommentId, "SELECT * FROM processed_comment where commentClassId = ? order by endLine");
+	public static ArrayList<Comment> findProcessedByCommentClassId(Connection dataBaseConnection, long classCommentId) {
+		return findByCommentClassID(dataBaseConnection, classCommentId, "SELECT * FROM processed_comment where commentClassId = ? order by endLine");
 	}
 	
-	public static ArrayList<Comment> findProcessedByCommentClassId(Connection dataBaseConnection, long classCommentId) {
+	public static ArrayList<Comment> findMatchedbyCommentClassId(Connection dataBaseConnection, long classCommentId) {
 		return findByCommentClassID(dataBaseConnection, classCommentId, "SELECT * FROM processed_comment where commentClassId = ? and dictionary_hit = 1 order by endLine");
 	}
 

@@ -1,5 +1,6 @@
 package ca.evermal.comments;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 
 import ca.evermal.heuristics.Heuristic;
@@ -10,23 +11,31 @@ import ca.evermal.util.ConnectionFactory;
 
 public class CommentProcessor {
 	
+	private String projectName;
+	
+	public CommentProcessor(String projectName) {
+		this.projectName =  projectName;
+	}
+
 	public void execute(){
-		ArrayList<CommentClass> commentClasses = CommentClass.getAll(ConnectionFactory.getPostgresql());
+		Connection connection = ConnectionFactory.getPostgresql();
+		ArrayList<CommentClass> commentClasses = CommentClass.getAll(connection, projectName);
 		processHeuristics(selectHeuristics(), commentClasses);
-		insertProcessedComments(commentClasses);
-//		matcheExpressionDictionary();
+		insertProcessedComments(connection, commentClasses);
+		new MergeMultiLineComments().start(projectName, connection);
+		new RemoveSourceCodeComments(projectName, connection).process();
 	}
 	
 	public void matcheExpressionDictionary(){
 		Comment.MatchDictionary();
 	}
 	
-	private void insertProcessedComments(ArrayList<CommentClass> commentClasses) {
+	private void insertProcessedComments(Connection connection, ArrayList<CommentClass> commentClasses) {
 		int totalNumberClasses = commentClasses.size(); 
 		int counter = 0;
 		for (CommentClass commentClass : commentClasses) {
 			for(Comment comment : commentClass.getCommentList()){
-				comment.insertProcessed();
+				comment.insertProcessed(connection);
 			}
 			counter ++;
 			System.out.println(counter + " out of: " + totalNumberClasses );
@@ -44,11 +53,10 @@ public class CommentProcessor {
 //		selection.add(new FilterTaskComments());
 		selection.add(new RemoveJavaDocComments());
 		selection.add(new RemoveLicenseComments());
-		selection.add(new RemoveSourceCodeComments());
 		return selection;
 	}
 
-	public void executeMergeMultiLines() {
-		MergeMultiLineComments.Start();	
-	}
+//	public void executeMergeMultiLines() {
+//		MergeMultiLineComments.Start();	
+//	}
 }
