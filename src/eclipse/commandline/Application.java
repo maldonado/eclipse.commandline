@@ -48,6 +48,7 @@ import ca.evermal.comments.CommentAnalyzer;
 import ca.evermal.comments.CommentClass;
 import ca.evermal.comments.CommentProcessor;
 import ca.evermal.comments.CommentExtractor;
+import ca.evermal.util.ConnectionFactory;
 
 public class Application implements IApplication {
 
@@ -207,10 +208,10 @@ public class Application implements IApplication {
 		//
 		//		workspace.save(true, null);
 
-//		processOpenJavaProjects(root, false, false, false);
-		CommentProcessor processor = new CommentProcessor();
-		processor.execute();
-		processor.executeMergeMultiLines();
+		processOpenJavaProjects(root, true, false, false);
+//		CommentProcessor processor = new CommentProcessor();
+//		processor.execute();
+//		processor.executeMergeMultiLines();
 		return IApplication.EXIT_OK;
 	}
 
@@ -240,7 +241,7 @@ public class Application implements IApplication {
 						processor.matcheExpressionDictionary();
 					}
 					if(commentAnalyzer){
-						ArrayList<CommentClass> commentClassesWithDictionaryMatches = CommentClass.getDictionaryMatchedByProject(project.getName());
+						ArrayList<CommentClass> commentClassesWithDictionaryMatches = CommentClass.getDictionaryMatchedByProject(project.getName(), ConnectionFactory.getPostgresql());
 						int counter = 0;
 						for (CommentClass commentClass : commentClassesWithDictionaryMatches) {
 							try{

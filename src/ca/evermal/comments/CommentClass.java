@@ -36,10 +36,14 @@ public class CommentClass {
 	private int startLine;
 	private int endLine;
 	private int analyzed;
+	private Connection dataBaseConnection;
 
 	public CommentClass(){};
 	
-	public CommentClass(ClassObject classObject){
+	public CommentClass(ClassObject classObject, Connection connection){
+		
+		dataBaseConnection = connection;
+		
 		IJavaProject examinedProject = ASTReader.getExaminedProject();
 		this.projectName = examinedProject.getElementName();
 
@@ -206,11 +210,10 @@ public class CommentClass {
 	}
 
 	public void insert() {
-		Connection dataBaseConnection = ConnectionFactory.getSqlite();
 		try {
 
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("INSERT INTO comment_class (projectName, "
-					+ "fileName, className, access, isAbstract, isEnum, isInterface, startLine, endLine, analyzed) values (?,?,?,?,?,?,?,?,?,?)");
+					+ "fileName, className, access, isAbstract, isEnum, isInterface, startLine, endLine, analyzed) values (?,?,?,?,?,?,?,?,?,?) returning id");
 
 			preparedStatement.setString(1, this.projectName);
 			preparedStatement.setString(2, this.fileName);
@@ -223,7 +226,14 @@ public class CommentClass {
 			preparedStatement.setInt(9, endLine + LINE_CORRECTION);
 			preparedStatement.setInt(10, this.analyzed);
 			preparedStatement.execute();
-			this.id = preparedStatement.getGeneratedKeys().getLong(1);
+//			postgresql
+			ResultSet resultSet = preparedStatement.getResultSet();
+			while(resultSet.next()){
+				this.id = resultSet.getLong("id");
+			}
+//			sqlite
+//			this.id = preparedStatement.getGeneratedKeys().getLong(1);
+			
 			for (Comment comment : commentList) {
 				comment.insert(dataBaseConnection, this.id);
 			}
@@ -233,7 +243,6 @@ public class CommentClass {
 	}
 
 	public void update(){
-		Connection dataBaseConnection = ConnectionFactory.getSqlite();
 		try {
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("UPDATE comment_class set projectName = ?, fileName =?, "
 					+ "className = ?, access=? , isAbstract =?, isEnum =?, isInterface =?, startLine =?, endLine=?, analyzed=? where id =?");
@@ -257,9 +266,9 @@ public class CommentClass {
 	
 	}
 	
-	public static ArrayList<CommentClass> getAll() {
+	public static ArrayList<CommentClass> getAll(Connection connection) {
 		System.out.println("Loading inserted comment_classes");
-		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+		Connection dataBaseConnection = connection;
 		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
 		try{
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT * FROM comment_class where projectName like '%emf%'");
@@ -289,9 +298,9 @@ public class CommentClass {
 		return result;
 	}
 	
-	public static ArrayList<CommentClass> getAllThatHasProcessedComments() {
+	public static ArrayList<CommentClass> getAllThatHasProcessedComments(Connection connection) {
 		System.out.println("Loading inserted comment_classes");
-		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+		Connection dataBaseConnection = connection;
 		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
 		try{
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT a.* FROM comment_class a, processed_comment b where a.id = b.commentClassId and a.projectName like '%jmeter%'");
@@ -320,9 +329,9 @@ public class CommentClass {
 		return result;
 	}
 
-	public static ArrayList<CommentClass> getDictionaryMatchedByProject(String projectName) {
+	public static ArrayList<CommentClass> getDictionaryMatchedByProject(String projectName, Connection connection) {
 		System.out.println("Loading inserted comment_classes");
-		Connection dataBaseConnection = ConnectionFactory.getSqlite();
+		Connection dataBaseConnection = connection;
 		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
 		try{
 			PreparedStatement preparedStatement = dataBaseConnection.prepareStatement("SELECT a.id, a.projectName, a.fileName, a.className,"

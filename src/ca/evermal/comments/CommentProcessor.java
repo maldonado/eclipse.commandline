@@ -6,11 +6,12 @@ import ca.evermal.heuristics.Heuristic;
 import ca.evermal.heuristics.RemoveJavaDocComments;
 import ca.evermal.heuristics.RemoveLicenseComments;
 import ca.evermal.heuristics.RemoveSourceCodeComments;
+import ca.evermal.util.ConnectionFactory;
 
 public class CommentProcessor {
 	
 	public void execute(){
-		ArrayList<CommentClass> commentClasses = CommentClass.getAll();
+		ArrayList<CommentClass> commentClasses = CommentClass.getAll(ConnectionFactory.getPostgresql());
 		processHeuristics(selectHeuristics(), commentClasses);
 		insertProcessedComments(commentClasses);
 //		matcheExpressionDictionary();

@@ -5,13 +5,15 @@ import gr.uom.java.ast.CommentType;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import ca.evermal.util.ConnectionFactory;
+
 public class MergeMultiLineComments{
 
 	private static boolean hasToMergeAgain = true;
 
 	public static void Start() {
 		System.out.println("Starting Merge Mult-line comments post-heuristc");
-		ArrayList<CommentClass> commentClasses = CommentClass.getAllThatHasProcessedComments();
+		ArrayList<CommentClass> commentClasses = CommentClass.getAllThatHasProcessedComments(ConnectionFactory.getPostgresql());
 		while(hasToMergeAgain){
 			hasToMergeAgain  = false;
 			for (CommentClass commentClass : commentClasses) {
