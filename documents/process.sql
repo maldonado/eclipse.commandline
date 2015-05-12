@@ -138,3 +138,6 @@ ALTER TABLE processed_comment add column classification text;
 #9 Run web applicarition to classify all comments
 
 
+take classname of the original , should be equals with the inner class after the last token
+select * from comment_class where projectname = 'argouml-core-umlpropertypanels' and filename= 'GetterSetterManagerImpl.java' ;
+select * from comment_class where  filename= 'FTPTest.java' ;

@@ -1,4 +1,4 @@
-package ca.evermal.heuristics;
+package ca.evermal.filters;
 
 import java.util.ArrayList;
 

@@ -1,10 +1,13 @@
-package ca.evermal.comments;
+package ca.evermal.filters;
 
 import gr.uom.java.ast.CommentType;
 
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.ListIterator;
+
+import ca.evermal.comments.Comment;
+import ca.evermal.comments.CommentClass;
 
 public class MergeMultiLineComments{
 

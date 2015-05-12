@@ -17,8 +17,6 @@ import java.util.ListIterator;
 
 import org.eclipse.jdt.core.IJavaProject;
 
-import ca.evermal.util.ConnectionFactory;
-
 public class CommentClass {
 
 
@@ -359,6 +357,54 @@ public class CommentClass {
 				result.add(commentClass);
 			}
 			System.out.println("comment_classes loaded...");
+			return result;
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public static ArrayList<String> getNotUniqueClassFileName(Connection connection, String projectName){
+		System.out.println("Loading not unique class file name");
+		ArrayList<String> result = new ArrayList<String>();
+		try{
+			PreparedStatement preparedStatement = connection.prepareStatement("select filename, count(*)  from comment_class where projectName = ? group by 1 having count(*) > 1");
+			preparedStatement.setString(1, projectName);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while(resultSet.next()){
+				String fileName = resultSet.getString("filename");
+				result.add(fileName);
+			}
+			System.out.println("files names loaded...");
+			return result;
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public static ArrayList<CommentClass> getAllWithSameFileName(Connection connection, String fileName) {
+		ArrayList<CommentClass> result = new ArrayList<CommentClass>();
+		try{
+			PreparedStatement preparedStatement = connection.prepareStatement("select * from comment_class where filename = ? order by id;");
+			preparedStatement.setString(1, fileName);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while(resultSet.next()){
+				CommentClass commentClass = new CommentClass();
+				commentClass.setId(resultSet.getLong("id"));
+				commentClass.set_abstract(resultSet.getString("isAbstract").equals("true") ? true : false);
+				commentClass.set_enum(resultSet.getString("isEnum").equals("true") ? true : false);
+				commentClass.set_interface(resultSet.getString("isInterface").equals("true") ? true : false);
+				String accessFromDB = resultSet.getString("access").toUpperCase().equals("") ? "NONE" : resultSet.getString("access").toUpperCase();
+				commentClass.setAccess(Access.valueOf(accessFromDB));
+				commentClass.setProjectName(resultSet.getString("projectName"));
+				commentClass.setFileName(resultSet.getString("fileName"));
+				commentClass.setClassName(resultSet.getString("className"));
+				commentClass.setStartLine(resultSet.getInt("startLine")); 
+				commentClass.setEndLine(resultSet.getInt("endLine")); 
+				commentClass.setAnalyzed(resultSet.getInt("analyzed"));
+				result.add(commentClass);
+			}
 			return result;
 		}catch(SQLException e){
 			e.printStackTrace();

@@ -3,10 +3,12 @@ package ca.evermal.comments;
 import java.sql.Connection;
 import java.util.ArrayList;
 
-import ca.evermal.heuristics.Heuristic;
-import ca.evermal.heuristics.RemoveJavaDocComments;
-import ca.evermal.heuristics.RemoveLicenseComments;
-import ca.evermal.heuristics.RemoveSourceCodeComments;
+import ca.evermal.filters.Heuristic;
+import ca.evermal.filters.MergeMultiLineComments;
+import ca.evermal.filters.RemoveInnerClassesComments;
+import ca.evermal.filters.RemoveJavaDocComments;
+import ca.evermal.filters.RemoveLicenseComments;
+import ca.evermal.filters.RemoveSourceCodeComments;
 import ca.evermal.util.ConnectionFactory;
 
 public class CommentProcessor {
@@ -22,6 +24,8 @@ public class CommentProcessor {
 		ArrayList<CommentClass> commentClasses = CommentClass.getAll(connection, projectName);
 		processHeuristics(selectHeuristics(), commentClasses);
 		insertProcessedComments(connection, commentClasses);
+		
+		new RemoveInnerClassesComments(projectName, connection).process();
 		new MergeMultiLineComments().start(projectName, connection);
 		new RemoveSourceCodeComments(projectName, connection).process();
 	}
