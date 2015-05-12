@@ -129,6 +129,12 @@ select count(*) from processed_comment a, comment_class b where a.commentclassid
 
 #7 dump database with filtered comments
 
+#8 insert classification columns into processed_comments
+ALTER TABLE comment add column classification text;
+ALTER TABLE processed_comment add column classification text;
 
+#insert already classified comments into the database (ant, jmeter, freechart)
+
+#9 Run web applicarition to classify all comments
 
 
