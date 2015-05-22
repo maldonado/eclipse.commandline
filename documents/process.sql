@@ -115,16 +115,20 @@ select count(*) from processed_comment a, comment_class b where a.commentclassid
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jruby-1.4.0';
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'sql12';
 -- in postgresql vs lite number of comments
-  4417 4436
-  7973 8126
- 10189 10303
-  6675 6825
-  5085 5868
-  3032 3071
- 11205 11232
-  4412 4449
-  5081 5176
-  8519 8627
+--(third column is final after the correction of the inner class)
+  4417 4436    4140
+  7973 8126    8163
+ 10189 10303   9788 
+  6675 6825    6569
+  5085 5868    4401
+  3032 3071    2968
+ 11205 11232  10322 
+  4412 4449    4433
+  5081 5176    4901
+  8519 8627    7330
+
+
+
 (the difference is normal because of the order of the filters that changed , see evernote log for more information)
 
 #7 dump database with filtered comments
@@ -137,7 +141,71 @@ ALTER TABLE processed_comment add column classification text;
 
 #9 Run web applicarition to classify all comments
 
+-- get numbers 
+-- everything that was classified
+select count(*) from processed_comment where classification is not null;
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification is not null;
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification is not null;
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19' and a.classification is not null;
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification is not null;
 
-take classname of the original , should be equals with the inner class after the last token
-select * from comment_class where projectname = 'argouml-core-umlpropertypanels' and filename= 'GetterSetterManagerImpl.java' ;
-select * from comment_class where  filename= 'FTPTest.java' ;
+  4140
+  8163
+  4433
+  9788
+total 26524
+
+-- everything that was classified as without classification (bug fix comments are not a category of technical debt is that why it is here)
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+
+  4006
+  7788
+  4214
+  8135 
+total 24143  
+
+-- everything that was clasified as technical debt
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+   134
+   375
+   219
+  1653
+total 2381
+
+-- techinical distribution per project
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') group by 1; 
+----------------+-------
+ DESIGN         |    95
+ TEST           |    10
+ IMPLEMENTATION |    16
+ DEFECT         |    13
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') group by 1;
+----------------+-------
+ DESIGN         |   316
+ DOCUMENTATION  |     3
+ IMPLEMENTATION |    22
+ TEST           |    12
+ DEFECT         |    22
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') group by 1;
+---------------+-------
+ DESIGN         |   184
+ IMPLEMENTATION |    25
+ TEST           |     1
+ DEFECT         |     9
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') group by 1;
+----------------+-------
+ DESIGN         |   801
+ DOCUMENTATION  |    30
+ TEST           |    44
+ IMPLEMENTATION |   651
+ DEFECT         |   127
+
+
+
+
