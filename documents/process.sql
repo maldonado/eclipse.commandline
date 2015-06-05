@@ -277,6 +277,8 @@ select commenttext from processed_comment  where classification in ('IMPLEMENTAT
 --// TODO: not implemented
 --// TODO Auto-generated constructor stub
 
+ // Have to think about lazy initialization here...  JHM // comparator = new java.text.RuleBasedCollator();
+
 select commenttext from processed_comment  where classification in ('TEST') ;           
 -- // TODO - need a lot more tests
 -- //TODO enable some proper tests!!
