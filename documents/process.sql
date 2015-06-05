@@ -147,18 +147,21 @@ select count(*) from processed_comment where classification is not null;
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification is not null;
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification is not null;
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19' and a.classification is not null;
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src' and a.classification is not null;
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification is not null;
 
   4140
   8163
   4433
+  6569
   9788
-total 26524
+total 33093
 
 -- everything that was classified as without classification (bug fix comments are not a category of technical debt is that why it is here)
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
 
   4006
@@ -171,6 +174,7 @@ total 24143
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
    134
    375
@@ -178,8 +182,7 @@ select count(*) from processed_comment a, comment_class b where a.commentclassid
   1653
 total 2381
 
--- techinical distribution per project
-select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') group by 1; 
+-- techinical debt distribution per project
 ----------------+-------
  DESIGN         |    95
  TEST           |    10
@@ -205,6 +208,97 @@ select a.classification, count(*) from processed_comment a, comment_class b wher
  TEST           |    44
  IMPLEMENTATION |   651
  DEFECT         |   127
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') group by 1;
+----------------+-------
+ DOCUMENTATION  |    16
+ DESIGN         |   126
+ DEFECT         |    13
+ IMPLEMENTATION |   134
+ TEST           |     6
+
+-- techinical debt examples per project and type
+
+
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0'   and a.classification in ('DOCUMENTATION') order by 2;  
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0'   and a.classification in ('DESIGN') order by 2;         
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0'   and a.classification in ('DEFECT') order by 2;         
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0'   and a.classification in ('IMPLEMENTATION') order by 2; 
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0'   and a.classification in ('TEST') order by 2;           
+
+
+select commenttext from processed_comment  where classification in ('DOCUMENTATION') ;  
+--**FIXME** This function needs documentation
+--// TODO Document the reason for this
+--* TODO: Document exceptional behaviour.
+--* TODO: centralise this knowledge.
+
+select commenttext from processed_comment  where classification in ('DESIGN') ;         
+--// not very nice but will do the job
+--// XXX Move to Project ( so it is shared by all helpers )
+--// XXX maybe use reflection to addPathElement (other patterns ?)
+--Can be written better... this is too hacky!
+--// TODO: move this to components
+--// Yuck: TIFFImageEncoder uses Error to report runtime problems
+
+// probably not the best choice, but it solves the problem of // relative paths in CLASSPATH
+ //quick & dirty, to make nested mapped p-sets work:
+ //I can't get my head around this; is encoding treatment needed here?
+ // Hack to resolve ModuleControllers in non GUI mode
+  /* TODO: really should be a separate class */
+  TODO: - This method is too complex, lets break it up
+  //hence a less elegant workaround that works:
+  // I hate this so much even before I start writing it. // Re-initialising a global in a place where no-one will see it just // feels wrong.  Oh well, here goes.
+   // TODO: This creates a dependency on the Critics subsystem. // Instead that subsystem should register its desired menus and actions.
+    FIXME: why override if nobody uses?
+
+select commenttext from processed_comment  where classification in ('DEFECT') ;
+ --// FIXME formatters are not thread-safe
+ --// Bug in above method 
+ --/* TODO: This does not work! (MVW)  
+ --// WARNING: the OutputStream version of this doesn't work!
+ --// TODO: This looks backwards. Left over from issue 2034?   
+ // This will have problems if the smallest possible // data segment is smaller than the size of the buffer // needed for regex matching
+  /* Disabled since it gives various problems: e.g. the toolbar icons                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             +
+          * get too wide. Also the default does not give the new java 5.0 looks.
+           /* This does not work (anymore/yet?),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           +
+          * since we never have a FigText here: */
+
+           /* The next line does not work: */
+           //return cal.getTimeInMillis(); // preceding code won't work with JDK 1.3
+
+select commenttext from processed_comment  where classification in ('IMPLEMENTATION') ; 
+ --//TODO no methods yet for getClassname 
+ --//TODO no method for newInstance using a reverse-classloader
+ --//TODO somehow show progress
+ --//TODO: improve, e.g. by adding counts to the SampleResult class
+ --//TODO: i18n
+ --// TODO: Add a button to force garbage collection
+-- TODO: The copy function is not yet * completely implemented - so we will  * have some exceptions here and there.*/
+--// TODO: not implemented
+--// TODO Auto-generated constructor stub
+
+select commenttext from processed_comment  where classification in ('TEST') ;           
+-- // TODO - need a lot more tests
+-- //TODO enable some proper tests!!
+-- //TODO add tests for SaveGraphics
+-- // TODO these assertions should be separate tests
+
+
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') order by 2;
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19'  and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') order by 2;
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%'        and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') order by 2;
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src'    and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') order by 2;
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0'   and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') order by 2; 
+
+
+
+
+
+
+
+
+
+
 
 
 
