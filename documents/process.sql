@@ -178,9 +178,9 @@ select count(*) from processed_comment a, comment_class b where a.commentclassid
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
    134
    375
-   219
+   219 - should be 295 check this !
   1653
-total 2381
+total 2457
 
 -- techinical debt distribution per project
 ----------------+-------
