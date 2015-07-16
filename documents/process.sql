@@ -116,16 +116,16 @@ select count(*) from processed_comment a, comment_class b where a.commentclassid
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'sql12';
 -- in postgresql vs lite number of comments
 --(third column is final after the correction of the inner class)
-  4417 4436    4140
-  7973 8126    8163
- 10189 10303   9788 
-  6675 6825    6569
-  5085 5868    4401
-  3032 3071    2968
- 11205 11232  10322 
-  4412 4449    4433
-  5081 5176    4901
-  8519 8627    7330
+'apache-ant-1.7.0';                4417  4436    4140
+'apache-jmeter-2.10';              7973  8126    8163
+'argouml%';                        10189 10303   9788 
+'columba-1.4-src';                 6675  6825    6569
+'emf-2.4.1';                        5085 5868    4401
+'hibernate-distribution-3.3.2.GA';  3032 3071    2968
+'jEdit-4.2';                       11205 11232  10322 
+'jfreechart-1.0.19';                4412 4449    4433
+'jruby-1.4.0';                      5081 5176    4901
+'sql12';                            8519 8627    7330
 
 
 
@@ -150,12 +150,25 @@ select count(*) from processed_comment a, comment_class b where a.commentclassid
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src' and a.classification is not null;
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification is not null;
 
-  4140
-  8163
-  4433
-  6569
-  9788
-total 33093
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'emf-2.4.1' and a.classification is not null;
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'hibernate-distribution-3.3.2.GA' and a.classification is not null;
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jEdit-4.2' and a.classification is not null;
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jruby-1.4.0' and a.classification is not null;
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'sql12%' and a.classification is not null;
+
+ant         4140
+jmeter      8163
+jfreechart  4433
+columba     6569
+argouml     9788
+
+emf         4401
+hibernate   2968
+jedit       10322
+jruby       4901
+sql12       7330
+
+total 33093(old)
 
 -- everything that was classified as without classification (bug fix comments are not a category of technical debt is that why it is here)
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
@@ -164,11 +177,24 @@ select count(*) from processed_comment a, comment_class b where a.commentclassid
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
 
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'emf-2.4.1' and a.classification in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'hibernate-distribution-3.3.2.GA' and a.classification in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jEdit-4.2' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jruby-1.4.0' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'sql12%' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+
   4006
   7788
   4214
   8135 
-total 24143  
+
+  4297
+  2496
+ 10066
+  4275
+  6944
+
+total 24143(old)  
 
 -- everything that was clasified as technical debt
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
@@ -176,45 +202,98 @@ select count(*) from processed_comment a, comment_class b where a.commentclassid
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'emf-2.4.1' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'hibernate-distribution-3.3.2.GA' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jEdit-4.2' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jruby-1.4.0' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'sql12%' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
+
    134
    375
-   219 - should be 295 check this !
+   295 
   1653
-total 2457
+
+   104
+   472
+   256
+   626
+   386
+
+total 2457(old)
 
 -- techinical debt distribution per project
-----------------+-------
- DESIGN         |    95
- TEST           |    10
- IMPLEMENTATION |    16
- DEFECT         |    13
-select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') group by 1;
-----------------+-------
- DESIGN         |   316
- DOCUMENTATION  |     3
- IMPLEMENTATION |    22
- TEST           |    12
- DEFECT         |    22
-select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') group by 1;
----------------+-------
- DESIGN         |   184
- IMPLEMENTATION |    25
- TEST           |     1
- DEFECT         |     9
-select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') group by 1;
-----------------+-------
- DESIGN         |   801
- DOCUMENTATION  |    30
- TEST           |    44
- IMPLEMENTATION |   651
- DEFECT         |   127
-select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') group by 1;
-----------------+-------
- DOCUMENTATION  |    16
- DESIGN         |   126
- DEFECT         |    13
- IMPLEMENTATION |   134
- TEST           |     6
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification not in ('BUG_FIX_COMMENT') group by 1;
+ WITHOUT_CLASSIFICATION |  3967
+ DESIGN                 |    95
+ TEST                   |    10
+ IMPLEMENTATION         |    16
+ DEFECT                 |    13
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification not in ('BUG_FIX_COMMENT') group by 1;
+ WITHOUT_CLASSIFICATION |  7683
+ DESIGN                 |   316
+ DOCUMENTATION          |     3
+ IMPLEMENTATION         |    22
+ TEST                   |    12
+ DEFECT                 |    22
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19' and a.classification not in ('BUG_FIX_COMMENT') group by 1;
+ WITHOUT_CLASSIFICATION |  4199
+ DESIGN                 |   184
+ IMPLEMENTATION         |    25
+ TEST                   |     1
+ DEFECT                 |     9
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%' and a.classification not in ('BUG_FIX_COMMENT') group by 1;
+ WITHOUT_CLASSIFICATION |  8039
+ DESIGN                 |   801
+ DOCUMENTATION          |    30
+ TEST                   |    44
+ IMPLEMENTATION         |   651
+ DEFECT                 |   127
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src' and a.classification not in ('BUG_FIX_COMMENT') group by 1;
+ WITHOUT_CLASSIFICATION |  6264
+ DOCUMENTATION          |    16
+ DESIGN                 |   126
+ IMPLEMENTATION         |   134
+ TEST                   |     6
+ DEFECT                 |    13
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'emf-2.4.1' and a.classification not in ('BUG_FIX_COMMENT') group by 1;
+------------------------+-------
+ WITHOUT_CLASSIFICATION |  4286
+ DESIGN                 |    78
+ IMPLEMENTATION         |    16
+ TEST                   |     2
+ DEFECT                 |     8
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'hibernate-distribution-3.3.2.GA' and a.classification not in ('BUG_FIX_COMMENT') group by 1;
+ -----------------------+-------
+ WITHOUT_CLASSIFICATION |  2496
+ DESIGN                 |   355
+ DOCUMENTATION          |     1
+ IMPLEMENTATION         |    64
+ DEFECT                 |    52
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jEdit-4.2' and a.classification not in ('BUG_FIX_COMMENT') group by 1;
+------------------------+-------
+ WITHOUT_CLASSIFICATION | 10066
+ DESIGN                 |   196
+ IMPLEMENTATION         |    14
+ TEST                   |     3
+ DEFECT                 |    43
+ select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jruby-1.4.0' and a.classification not in ('BUG_FIX_COMMENT') group by 1;
+ ------------------------+-------
+ WITHOUT_CLASSIFICATION |  4275
+ DESIGN                 |   343
+ DOCUMENTATION          |     2
+ IMPLEMENTATION         |   114
+ TEST                   |     6
+ DEFECT                 |   161
+select a.classification, count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'sql12' and a.classification not in ('BUG_FIX_COMMENT') group by 1;
+------------------------+-------
+ WITHOUT_CLASSIFICATION |  6929
+ DESIGN                 |   209
+ DOCUMENTATION          |     2
+ IMPLEMENTATION         |   150
+ TEST                   |     1
+ DEFECT                 |    24
+
 
 -- techinical debt examples per project and type
 
@@ -225,6 +304,10 @@ select a.commenttext, a.classification from processed_comment a, comment_class b
 select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0'   and a.classification in ('IMPLEMENTATION') order by 2; 
 select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0'   and a.classification in ('TEST') order by 2;           
 
+
+select b.projectname, a.commenttext from processed_comment a, comment_class b where a.commentclassid = b.id  where b.commentText = "TODO: - This method is too complex, lets break it up" 
+
+select b.projectname, a.commenttext from processed_comment a, comment_class b where a.commentclassid = b.id  and a.commenttext like '%TODO enable some proper tests!!%';
 
 select commenttext from processed_comment  where classification in ('DOCUMENTATION') ;  
 --**FIXME** This function needs documentation
@@ -286,9 +369,9 @@ select commenttext from processed_comment  where classification in ('TEST') ;
 -- // TODO these assertions should be separate tests
 
 
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') order by 2;
+select b.projectname, a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id and b.projectname in ('jfreechart-1.0.19','columba-1.4-src','apache-ant-1.7.0', 'apache-jmeter-2.10', 'argouml-app','argouml-core-diagrams-activity2','argouml-core-diagrams-deployment2','argouml-core-diagrams-sequence2','argouml-core-diagrams-state2','argouml-core-model','argouml-core-model-euml','argouml-core-model-mdr','argouml-core-notation','argouml-core-transformer','argouml-core-umlpropertypanels')  and a.classification not in ('BUG_FIX_COMMENT') order by 1,2;
 select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19'  and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') order by 2;
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%'        and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') order by 2;
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%'        and a.classification  in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') order by 2;
 select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src'    and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') order by 2;
 select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0'   and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') order by 2; 
 
@@ -296,12 +379,26 @@ select a.commenttext, a.classification from processed_comment a, comment_class b
 
 
 
+select a.classification, a.commenttext from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%';
+
+
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('DOCUMENTATION') order by 2 limit 35;  
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('DESIGN') order by 2 limit 35;         
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('DEFECT') order by 2 limit 35;         
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('IMPLEMENTATION') order by 2 limit 35; 
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('TEST') order by 2 limit 35;           
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('WITHOUT_CLASSIFICATION') order by 2 limit 35;           
+select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('BUG_FIX_COMMENT') order by 2 limit 35;           
 
 
 
+select a.id, a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%sql%'  and commentText like '%when there are i18n jars in the%';
+
+update processed_comment set classification = "IMPLEMENTATION" where id in (85905, 90959, 83065)
+update processed_comment set classification = "WITHOUT_CLASSIFICATION" where id in (select a.id from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%sql%'  and commentText like '%I18n%')
 
 
 
-
-
+apache-ant;apache-jmeter;argouml;jfreechart
+columba
 
