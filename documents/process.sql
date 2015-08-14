@@ -47,6 +47,89 @@ CREATE TABLE processed_comment (
     refactoring_list_name text
 );
 
+#1 create table in postgresql
+drop table if exists classifier_results;
+create table classifier_results (
+projectName text,
+trainingOrder text,
+category text,
+projectsTrainedWith integer,
+totalTrainingComments integer,
+withoutClassificationCommentsTrain integer,
+classifiedCommentsTrain integer,
+totalTestComments integer,
+withoutClassificationCommentsTest integer,
+classifiedCommentsTest integer,
+classifiedTP integer, 
+classifiedFN integer,
+classifiedFP integer,
+classifiedTN integer, 
+classifiedAccuracy numeric,
+classifiedPrecision numeric,
+classifiedRecall numeric,
+classifiedF1 numeric,
+classifiedRandomPrecision numeric,
+classifiedRandomRecall numeric,
+classifiedRandomF1 numeric,
+withoutClassificationTP integer, 
+withoutClassificationFN integer,
+withoutClassificationFP integer,
+withoutClassificationTN integer, 
+withoutClassificationAccuracy numeric,
+withoutClassificationPrecision numeric,
+withoutClassificationRecall numeric,
+withoutClassificationF1 numeric,
+withoutClassificatioRandomPrecision numeric,
+withoutClassificatioRandomRecall numeric,
+withoutClassificatioRandomF1 numeric,
+microAveragedF1 numeric,
+macroAveragedF1 numeric
+); 
+
+drop table if exists significative_sample;
+create table significative_sample (
+    processedCommentId integer,
+    projectName text,
+    commentText text,
+    classification text,
+    reviewer text,
+    reviewerClassification text
+);
+
+insert into significative_sample (processedCommentId,commentText,classification) 
+  select id, commentText, classification 
+    from processed_comment where classification = 'WITHOUT_CLASSIFICATION' limit 609
+
+insert into significative_sample (processedCommentId,commentText,classification) 
+  select id, commentText, classification 
+    from processed_comment where classification = 'DESIGN' limit 29
+
+insert into significative_sample (processedCommentId,commentText,classification) 
+  select id, commentText, classification 
+    from processed_comment where classification = 'IMPLEMENTATION' limit 13
+
+insert into significative_sample (processedCommentId,commentText,classification) 
+  select id, commentText, classification 
+    from processed_comment where classification = 'DEFECT' limit 5    
+
+insert into significative_sample (processedCommentId,commentText,classification) 
+  select id, commentText, classification 
+    from processed_comment where classification = 'TEST' limit 2    
+
+insert into significative_sample (processedCommentId,commentText,classification) 
+  select id, commentText, classification 
+    from processed_comment where classification = 'DOCUMENTATION' limit 1  
+
+with temporary as (
+  
+  select b.projectname, a.id as processedCommentId from processed_comment a, comment_class b where a.commentClassId = b.id 
+    
+  )
+update significative_sample set projectname = r.projectname from temporary r where r.processedCommentId = significative_sample.processedCommentId;      
+
+
+
+
 #2 run eclipse.commandline application adapted to run with postgresql to parse the comments and collect the raw comments.
 -- alternatively , is possible to run sqlite_to_postgresql.py for each sqlite database file. i did not do that because 
 -- the sqlite files as not reliable and there was multiple versions of them.
@@ -161,7 +244,6 @@ jmeter      8163
 jfreechart  4433
 columba     6569
 argouml     9788
-
 emf         4401
 hibernate   2968
 jedit       10322
@@ -171,7 +253,7 @@ sql12       7330
 total 33093(old)
 
 -- everything that was classified as without classification (bug fix comments are not a category of technical debt is that why it is here)
-select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
+select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0' and a.classification in ('DOCUMENTATION');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-jmeter-2.10' and a.classification in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src' and a.classification in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
@@ -187,7 +269,6 @@ select count(*) from processed_comment a, comment_class b where a.commentclassid
   7788
   4214
   8135 
-
   4297
   2496
  10066
@@ -209,16 +290,16 @@ select count(*) from processed_comment a, comment_class b where a.commentclassid
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jruby-1.4.0' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
 select count(*) from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'sql12%' and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT');
 
-   134
-   375
-   295 
-  1653
-
-   104
-   472
-   256
-   626
-   386
+apache-ant-1.7.0                   134
+apache-jmeter-2.10                 375
+jfreechart-1.0.19                  219
+columba-1.4-src                    295
+argouml%                          1653
+emf-2.4.1                          104
+hibernate-distribution-3.3.2.GA    472
+jEdit-4.2                          256
+jruby-1.4.0                        626
+sql12                              386
 
 total 2457(old)
 
@@ -323,82 +404,154 @@ select commenttext from processed_comment  where classification in ('DESIGN') ;
 --// TODO: move this to components
 --// Yuck: TIFFImageEncoder uses Error to report runtime problems
 
-// probably not the best choice, but it solves the problem of // relative paths in CLASSPATH
- //quick & dirty, to make nested mapped p-sets work:
- //I can't get my head around this; is encoding treatment needed here?
- // Hack to resolve ModuleControllers in non GUI mode
-  /* TODO: really should be a separate class */
-  TODO: - This method is too complex, lets break it up
-  //hence a less elegant workaround that works:
-  // I hate this so much even before I start writing it. // Re-initialising a global in a place where no-one will see it just // feels wrong.  Oh well, here goes.
-   // TODO: This creates a dependency on the Critics subsystem. // Instead that subsystem should register its desired menus and actions.
-    FIXME: why override if nobody uses?
+-- // probably not the best choice, but it solves the problem of // relative paths in CLASSPATH
+--  //quick & dirty, to make nested mapped p-sets work:
+--  //I can't get my head around this; is encoding treatment needed here?
+--  // Hack to resolve ModuleControllers in non GUI mode
+--   /* TODO: really should be a separate class */
+--   TODO: - This method is too complex, lets break it up
+--   //hence a less elegant workaround that works:
+--   // I hate this so much even before I start writing it. // Re-initialising a global in a place where no-one will see it just // feels wrong.  Oh well, here goes.
+--    // TODO: This creates a dependency on the Critics subsystem. // Instead that subsystem should register its desired menus and actions.
+--     FIXME: why override if nobody uses?
 
-select commenttext from processed_comment  where classification in ('DEFECT') ;
- --// FIXME formatters are not thread-safe
- --// Bug in above method 
- --/* TODO: This does not work! (MVW)  
- --// WARNING: the OutputStream version of this doesn't work!
- --// TODO: This looks backwards. Left over from issue 2034?   
- // This will have problems if the smallest possible // data segment is smaller than the size of the buffer // needed for regex matching
-  /* Disabled since it gives various problems: e.g. the toolbar icons                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             +
-          * get too wide. Also the default does not give the new java 5.0 looks.
-           /* This does not work (anymore/yet?),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           +
-          * since we never have a FigText here: */
+-- select commenttext from processed_comment  where classification in ('DEFECT') ;
+--  --// FIXME formatters are not thread-safe
+--  --// Bug in above method 
+--  --/* TODO: This does not work! (MVW)  
+--  --// WARNING: the OutputStream version of this doesn't work!
+--  --// TODO: This looks backwards. Left over from issue 2034?   
+--  // This will have problems if the smallest possible // data segment is smaller than the size of the buffer // needed for regex matching
+--   /* Disabled since it gives various problems: e.g. the toolbar icons                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             +
+--           * get too wide. Also the default does not give the new java 5.0 looks.
+--            /* This does not work (anymore/yet?),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           +
+--           * since we never have a FigText here: */
 
-           /* The next line does not work: */
-           //return cal.getTimeInMillis(); // preceding code won't work with JDK 1.3
+--            /* The next line does not work: */
+--            //return cal.getTimeInMillis(); // preceding code won't work with JDK 1.3
 
-select commenttext from processed_comment  where classification in ('IMPLEMENTATION') ; 
- --//TODO no methods yet for getClassname 
- --//TODO no method for newInstance using a reverse-classloader
- --//TODO somehow show progress
- --//TODO: improve, e.g. by adding counts to the SampleResult class
- --//TODO: i18n
- --// TODO: Add a button to force garbage collection
--- TODO: The copy function is not yet * completely implemented - so we will  * have some exceptions here and there.*/
---// TODO: not implemented
---// TODO Auto-generated constructor stub
+-- select commenttext from processed_comment  where classification in ('IMPLEMENTATION') ; 
+--  --//TODO no methods yet for getClassname 
+--  --//TODO no method for newInstance using a reverse-classloader
+--  --//TODO somehow show progress
+--  --//TODO: improve, e.g. by adding counts to the SampleResult class
+--  --//TODO: i18n
+--  --// TODO: Add a button to force garbage collection
+-- -- TODO: The copy function is not yet * completely implemented - so we will  * have some exceptions here and there.*/
+-- --// TODO: not implemented
+-- --// TODO Auto-generated constructor stub
 
- // Have to think about lazy initialization here...  JHM // comparator = new java.text.RuleBasedCollator();
+--  // Have to think about lazy initialization here...  JHM // comparator = new java.text.RuleBasedCollator();
 
-select commenttext from processed_comment  where classification in ('TEST') ;           
--- // TODO - need a lot more tests
--- //TODO enable some proper tests!!
--- //TODO add tests for SaveGraphics
--- // TODO these assertions should be separate tests
-
-
-select b.projectname, a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id and b.projectname in ('jfreechart-1.0.19','columba-1.4-src','apache-ant-1.7.0', 'apache-jmeter-2.10', 'argouml-app','argouml-core-diagrams-activity2','argouml-core-diagrams-deployment2','argouml-core-diagrams-sequence2','argouml-core-diagrams-state2','argouml-core-model','argouml-core-model-euml','argouml-core-model-mdr','argouml-core-notation','argouml-core-transformer','argouml-core-umlpropertypanels')  and a.classification not in ('BUG_FIX_COMMENT') order by 1,2;
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19'  and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') order by 2;
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%'        and a.classification  in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') order by 2;
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src'    and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') order by 2;
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0'   and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') order by 2; 
+-- select commenttext from processed_comment  where classification in ('TEST') ;           
+-- -- // TODO - need a lot more tests
+-- -- //TODO enable some proper tests!!
+-- -- //TODO add tests for SaveGraphics
+-- -- // TODO these assertions should be separate tests
 
 
+-- select b.projectname, a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id and b.projectname in ('jfreechart-1.0.19','columba-1.4-src','apache-ant-1.7.0', 'apache-jmeter-2.10', 'argouml-app','argouml-core-diagrams-activity2','argouml-core-diagrams-deployment2','argouml-core-diagrams-sequence2','argouml-core-diagrams-state2','argouml-core-model','argouml-core-model-euml','argouml-core-model-mdr','argouml-core-notation','argouml-core-transformer','argouml-core-umlpropertypanels')  and a.classification not in ('BUG_FIX_COMMENT') order by 1,2;
+-- select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'jfreechart-1.0.19'  and a.classification not in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') order by 2;
+-- select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like 'argouml%'        and a.classification  in ('WITHOUT_CLASSIFICATION', 'BUG_FIX_COMMENT') order by 2;
+-- select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'columba-1.4-src'    and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') order by 2;
+-- select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname = 'apache-ant-1.7.0'   and a.classification not in ('WITHOUT_CLASSIFICATION' ,'BUG_FIX_COMMENT') order by 2; 
+
+
+-- select a.classification, a.commenttext from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%';
+-- select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('DOCUMENTATION') order by 2 limit 35;  
+-- select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('DESIGN') order by 2 limit 35;         
+-- select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('DEFECT') order by 2 limit 35;         
+-- select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('IMPLEMENTATION') order by 2 limit 35; 
+-- select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('TEST') order by 2 limit 35;           
+-- select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('WITHOUT_CLASSIFICATION') order by 2 limit 35;           
+-- select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('BUG_FIX_COMMENT') order by 2 limit 35;           
+
+-- select a.id, a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%sql%'  and commentText like '%when there are i18n jars in the%';
+
+-- update processed_comment set classification = "IMPLEMENTATION" where id in (85905, 90959, 83065)
+-- update processed_comment set classification = "WITHOUT_CLASSIFICATION" where id in (select a.id from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%sql%'  and commentText like '%I18n%')
+
+-- apache-ant;apache-jmeter;argouml;jfreechart
+-- columba
+
+apache-ant-1.7.0;apache-jmeter-2.10;argouml;columba-1.4-src;emf-2.4.1;hibernate-distribution-3.3.2.GA;jEdit-4.2;jfreechart-1.0.19;jruby-1.4.0;sql12
+
+
+crescent order of technical debts projects
+emf-2.4.1;apache-ant-1.7.0;jfreechart-1.0.19;jEdit-4.2;columba-1.4-src;apache-jmeter-2.10;sql12;hibernate-distribution-3.3.2.GA;jruby-1.4.0;argouml
+
+ant:
+emf-2.4.1;jfreechart-1.0.19;jEdit-4.2;columba-1.4-src;apache-jmeter-2.10;sql12;hibernate-distribution-3.3.2.GA;jruby-1.4.0;argouml
+
+jmeter:
+emf-2.4.1;apache-ant-1.7.0;jfreechart-1.0.19;jEdit-4.2;columba-1.4-src;sql12;hibernate-distribution-3.3.2.GA;jruby-1.4.0;argouml
+
+argouml:
+emf-2.4.1;apache-ant-1.7.0;jfreechart-1.0.19;jEdit-4.2;columba-1.4-src;apache-jmeter-2.10;sql12;hibernate-distribution-3.3.2.GA;jruby-1.4.0
+
+columba:
+emf-2.4.1;apache-ant-1.7.0;jfreechart-1.0.19;jEdit-4.2;sql12;hibernate-distribution-3.3.2.GA;jruby-1.4.0;argouml
+
+emf:
+apache-ant-1.7.0;jfreechart-1.0.19;jEdit-4.2;columba-1.4-src;apache-jmeter-2.10;sql12;hibernate-distribution-3.3.2.GA;jruby-1.4.0;argouml
+
+hibernate:
+emf-2.4.1;apache-ant-1.7.0;jfreechart-1.0.19;jEdit-4.2;columba-1.4-src;apache-jmeter-2.10;sql12;jruby-1.4.0;argouml
+
+jEdit:
+emf-2.4.1;apache-ant-1.7.0;jfreechart-1.0.19;columba-1.4-src;apache-jmeter-2.10;sql12;hibernate-distribution-3.3.2.GA;jruby-1.4.0;argouml
+
+jfreechart:
+emf-2.4.1;apache-ant-1.7.0;jEdit-4.2;columba-1.4-src;apache-jmeter-2.10;sql12;hibernate-distribution-3.3.2.GA;jruby-1.4.0;argouml
+
+jruby:
+emf-2.4.1;apache-ant-1.7.0;jfreechart-1.0.19;jEdit-4.2;columba-1.4-src;apache-jmeter-2.10;sql12;hibernate-distribution-3.3.2.GA;argouml
+
+sql12:
+emf-2.4.1;apache-ant-1.7.0;jfreechart-1.0.19;jEdit-4.2;columba-1.4-src;apache-jmeter-2.10;hibernate-distribution-3.3.2.GA;jruby-1.4.0;argouml
+
+
+decrescent order of technical debts projects
+argouml;hibernate-distribution-3.3.2.GA;jruby-1.4.0;sql12;apache-jmeter-2.10;columba-1.4-src;jEdit-4.2;jfreechart-1.0.19;apache-ant-1.7.0;emf-2.4.1
+
+ant:
+argouml;hibernate-distribution-3.3.2.GA;jruby-1.4.0;sql12;apache-jmeter-2.10;columba-1.4-src;jEdit-4.2;jfreechart-1.0.19;emf-2.4.1
+
+jmeter:
+argouml;hibernate-distribution-3.3.2.GA;jruby-1.4.0;sql12;columba-1.4-src;jEdit-4.2;jfreechart-1.0.19;apache-ant-1.7.0;emf-2.4.1
+
+argouml:
+hibernate-distribution-3.3.2.GA;jruby-1.4.0;sql12;apache-jmeter-2.10;columba-1.4-src;jEdit-4.2;jfreechart-1.0.19;apache-ant-1.7.0;emf-2.4.1
+
+columba:
+argouml;hibernate-distribution-3.3.2.GA;jruby-1.4.0;sql12;apache-jmeter-2.10;jEdit-4.2;jfreechart-1.0.19;apache-ant-1.7.0;emf-2.4.1
+
+emf:
+argouml;hibernate-distribution-3.3.2.GA;jruby-1.4.0;sql12;apache-jmeter-2.10;columba-1.4-src;jEdit-4.2;jfreechart-1.0.19;apache-ant-1.7.0
+
+hibernate:
+argouml;jruby-1.4.0;sql12;apache-jmeter-2.10;columba-1.4-src;jEdit-4.2;jfreechart-1.0.19;apache-ant-1.7.0;emf-2.4.1
+
+jEdit:
+argouml;hibernate-distribution-3.3.2.GA;jruby-1.4.0;sql12;apache-jmeter-2.10;columba-1.4-src;jfreechart-1.0.19;apache-ant-1.7.0;emf-2.4.1
+
+jfreechart:
+argouml;hibernate-distribution-3.3.2.GA;jruby-1.4.0;sql12;apache-jmeter-2.10;columba-1.4-src;jEdit-4.2;apache-ant-1.7.0;emf-2.4.1
+
+jruby:
+argouml;hibernate-distribution-3.3.2.GA;sql12;apache-jmeter-2.10;columba-1.4-src;jEdit-4.2;jfreechart-1.0.19;apache-ant-1.7.0;emf-2.4.1
+
+sql12:
+argouml;hibernate-distribution-3.3.2.GA;apache-jmeter-2.10;columba-1.4-src;jEdit-4.2;jfreechart-1.0.19;apache-ant-1.7.0;emf-2.4.1
 
 
 
-select a.classification, a.commenttext from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%';
-
-
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('DOCUMENTATION') order by 2 limit 35;  
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('DESIGN') order by 2 limit 35;         
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('DEFECT') order by 2 limit 35;         
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('IMPLEMENTATION') order by 2 limit 35; 
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('TEST') order by 2 limit 35;           
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('WITHOUT_CLASSIFICATION') order by 2 limit 35;           
-select a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%apache-jmeter-2.10%'  and a.classification in ('BUG_FIX_COMMENT') order by 2 limit 35;           
 
 
 
-select a.id, a.commenttext, a.classification from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%sql%'  and commentText like '%when there are i18n jars in the%';
 
-update processed_comment set classification = "IMPLEMENTATION" where id in (85905, 90959, 83065)
-update processed_comment set classification = "WITHOUT_CLASSIFICATION" where id in (select a.id from processed_comment a, comment_class b where a.commentclassid = b.id  and b.projectname like '%sql%'  and commentText like '%I18n%')
+select * from classifier_results where projectName like ('%ant%') and trainingOrder = 'decrescent/' order by 1;
 
-
-
-apache-ant;apache-jmeter;argouml;jfreechart
-columba
+select projectname, classifiedPrecision, classifiedRecall, classifiedF1 from classifier_results where projectsTrainedWith = 9 and category = 'DESIGN' and trainingOrder = 'decrescent/'
+select projectname, classifiedPrecision, classifiedRecall, classifiedF1, classifiedRandomPrecision, classifiedRandomRecall, classifiedRandomF1 from classifier_results where projectsTrainedWith = 9 and category = 'DEFECT' and trainingOrder = 'decrescent/'
 
